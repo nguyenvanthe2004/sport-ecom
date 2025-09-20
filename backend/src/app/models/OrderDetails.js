@@ -8,4 +8,4 @@ const OrderDetailsSchema = new Schema({
     price: { type: Number, required: true },
     createAt: { type: Date, default: Date.now },
 })
-module.exports = mongoose.model('OrderDetails', OrderDetailsSchema);
+module.exports = mongoose.model('OrderDetail', OrderDetailsSchema);
