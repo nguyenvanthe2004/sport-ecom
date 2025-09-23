@@ -3,8 +3,10 @@ const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    variants: { type: [{ type: Schema.Types.ObjectId, ref: 'Variant' }], default: [] },
     name: { type: String, required: true },
     description: { type: String },
+    slug: { type: String, required: true, unique: true },
     brandId: { type: Schema.Types.ObjectId, ref: 'Brand', required: true },
     categoryId: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
     createAt: { type: Date, default: Date.now },

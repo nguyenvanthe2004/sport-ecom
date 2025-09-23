@@ -1,4 +1,5 @@
 const Order = require('../models/Orders');
+const OrderDetails = require('../models/OrderDetails');
 
 class OrderController {
     async getAllOrders(req, res) {

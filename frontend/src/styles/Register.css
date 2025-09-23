@@ -1,0 +1,78 @@
+/* Container */
+.register-container {
+  max-width: 600px;           /* rộng hơn */
+  margin: 60px auto;          /* cách trên dưới */
+  background: #fff;
+  border-radius: 8px;         /* bo góc mềm */
+  padding: 20px;              /* padding lớn hơn */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); /* bóng rõ hơn */
+}
+
+.register-container h2 {
+  text-align: center;
+  font-size: 28px;            /* chữ tiêu đề to */
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 32px;
+}
+
+/* Form */
+.register-form .form-group {
+  margin-bottom: 24px;        /* khoảng cách giữa các input */
+}
+
+.register-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;            /* chữ label to */
+  font-weight: 500;
+  color: #333;
+}
+
+.register-form input {
+  width: 100%;
+  padding: 14px 16px;         /* input cao hơn */
+  border: 2px solid #ccc;     /* border dày hơn */
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.register-form input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); /* viền sáng khi focus */
+  outline: none;
+}
+
+/* Error */
+.error-message {
+  color: #e53935;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Button */
+.register-btn {
+  display: block;
+  margin: 0 auto;
+  width: 50%;
+  padding: 16px 0;            /* nút cao hơn */
+  border: none;
+  border-radius: 6px;
+  background-color: #d32f2f; /* đỏ */
+  color: #fff;
+  font-size: 17px;            /* chữ nút to */
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.register-btn:hover {
+  background-color: #b71c1c;
+}
+
+.register-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
