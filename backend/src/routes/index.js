@@ -6,6 +6,7 @@ const variantRoutes = require('./variant');
 const orderRoutes = require('./order');
 const cartRoutes = require('./cart');
 const paymentRoutes = require('./payment');
+const uploadRoutes = require('./upload');
 
 function route(app) {
     app.use('/user', userRoutes);
@@ -23,5 +24,7 @@ function route(app) {
     app.use('/cart', cartRoutes);
     
     app.use('/payment', paymentRoutes);
+
+    app.use('/upload', uploadRoutes);
 }
 module.exports = route;
