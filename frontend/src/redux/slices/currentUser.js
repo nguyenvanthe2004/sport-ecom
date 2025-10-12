@@ -7,6 +7,7 @@ const initialState = {
     fullname: "",
     role: "",
   },
+  loading: true,
 };
 
 export const userCurrentSlice = createSlice({
@@ -14,8 +15,9 @@ export const userCurrentSlice = createSlice({
   initialState,
   reducers: {
     setCurrentUser: (state, action) => {
-        console.log("==action.payload", action.payload)
+      console.log("==action.payload", action.payload);
       state.currentUser = action.payload;
+      state.loading = false;
     },
     clearCurrentUser: (state) => {
       state.currentUser = {
@@ -24,11 +26,16 @@ export const userCurrentSlice = createSlice({
         fullname: "",
         role: "",
       };
+      state.loading = false;
+    },
+    setLoading: (state) => {
+      state.loading = true;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setCurrentUser, clearCurrentUser } = userCurrentSlice.actions;
+export const { setCurrentUser, clearCurrentUser, setLoading } =
+  userCurrentSlice.actions;
 
 export default userCurrentSlice.reducer;

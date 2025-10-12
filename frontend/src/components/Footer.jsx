@@ -7,6 +7,7 @@ const Footer = () => {
       <div class="container grid">
         <div class="footer-box">
           <img src="./img/logo.jpg" alt="" />
+          <h3>GIỚI THIỆU</h3>
           <p>
             Shop thời trang thể thao, cam kết mang đến những sản phẩm "Đẹp -
             Chất - Giá hợp lý". Với chính sách bán hàng lấy khách hàng làm trung
