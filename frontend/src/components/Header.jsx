@@ -12,7 +12,6 @@ const Header = () => {
 
   return (
     <header class="header">
-      \
       <NavLink to="/home" class="logo">
         <img src="logo.jpg" alt="" />
       </NavLink>
