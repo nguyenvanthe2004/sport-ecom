@@ -9,10 +9,14 @@ import { getCurrentUser } from "./services/api";
 import AuthPage from "./pages/authPage";
 import Home from "./pages/HomePage/Home";
 import AdminLayout from "./pages/AdminPage/Home";
-import ProductManager from "./components/ProductManager/ProductManager";
-import CategoryManager from "./components/CategoryManager/CategoryManager";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import CreateProduct from "./pages/AdminPage/CreateProduct";
+import ProductManagement from "./pages/AdminPage/ProductManager";
+import CategoryManager from "./pages/AdminPage/CategoryManager";
+import CreateCategory from "./pages/AdminPage/CreateCategory";
+import UpdateCategory from "./pages/AdminPage/UpdateCategory";
+import UpdateProduct from "./pages/AdminPage/UpdateProduct";
 
 function App() {
   const dispatch = useDispatch();
@@ -50,10 +54,20 @@ function App() {
             </ProtectedRoute>
           }
         >
-          {/* Các route con nằm trong AdminLayout */}
-          <Route path="dashboard" element={<h1>Dashboard</h1>} />
-          <Route path="products" element={<ProductManager />} />
-          <Route path="categories" element={<CategoryManager />} />
+          <Route path="products">
+            <Route index element={<ProductManagement />} />{" "}
+            
+            <Route path="create" element={<CreateProduct />} />{" "}
+            <Route path="edit/:id" element={<UpdateProduct />} />
+            
+          </Route>
+          <Route path="categories">
+            <Route index element={<CategoryManager />} />{" "}
+            
+            <Route path="create" element={<CreateCategory />} />{" "}
+            <Route path="edit/:id" element={<UpdateCategory />} />{" "}
+            
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

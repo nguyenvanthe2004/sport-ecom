@@ -12,6 +12,9 @@ class CategoriesController {
   async createCategory(req, res) {
     try {
       const { userId, name, description } = req.body;
+      console.log("req.body:", req.body);
+
+      
       if (!name) {
         return res.status(400).json({ message: "Category name is required" });
       }

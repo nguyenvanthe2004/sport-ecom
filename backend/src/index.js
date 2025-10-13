@@ -5,9 +5,14 @@ const app = express();
 const route = require("./routes");
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser")
+const path = require("path");
+
 
 const port = 8000;
 const db = require("./config/db");
+
+
+app.use(express.static('public'));
 
 app.use(cookieParser())
 app.use(cors({
@@ -22,8 +27,9 @@ db.connect();
 app.get("/", (req, res) => {
     res.send("Hello Express");
 })
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
 
 route(app);
 

@@ -1,0 +1,198 @@
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ProductAPI } from "../../services/api";
+import "../../styles/ProductManager.css";
+
+const ProductManagement = () => {
+  const [products, setProducts] = useState([]);
+  const [expandedProductId, setExpandedProductId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  // 🔹 Lấy danh sách sản phẩm từ API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await ProductAPI.getAll();
+        setProducts(res.products || []); // đảm bảo có mảng products
+      } catch (err) {
+        console.error("❌ Lỗi lấy danh sách sản phẩm:", err);
+        alert("Không thể tải danh sách sản phẩm!");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // 🔹 Xóa sản phẩm
+  const handleDelete = async (id) => {
+    if (window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) {
+      try {
+        await ProductAPI.delete(id);
+        setProducts(products.filter((p) => p._id !== id));
+        alert("✅ Đã xóa sản phẩm!");
+      } catch (err) {
+        console.error("❌ Lỗi xóa sản phẩm:", err);
+        alert("Không thể xóa sản phẩm!");
+      }
+    }
+  };
+
+  // 🔹 Toggle hiện/ẩn variants
+  const toggleVariants = (productId) => {
+    setExpandedProductId((prev) => (prev === productId ? null : productId));
+  };
+
+  return (
+    <div className="container mt-4">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="fw-bold">Quản lý sản phẩm</h2>
+        <Link to="/admin/products/create" className="btn btn-primary">
+          + Thêm sản phẩm
+        </Link>
+      </div>
+
+      {/* Bảng sản phẩm */}
+      <div className="table-responsive shadow-sm rounded bg-white">
+        <table className="table table-hover align-middle mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>#</th>
+              <th>Ảnh</th>
+              <th>Tên sản phẩm</th>
+              <th>Slug</th>
+              <th>Brand</th>
+              <th>Category</th>
+              <th>Mô tả</th>
+              <th>Biến thể</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="9" className="text-center py-4 text-muted">
+                  Đang tải dữ liệu...
+                </td>
+              </tr>
+            ) : products.length > 0 ? (
+              products.map((p, index) => (
+                <React.Fragment key={p._id}>
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>
+                      {p.variants?.[0]?.image ? (
+                        <img
+                          src={`http://localhost:8000/${p.variants[0].image}`}
+                          alt={p.name}
+                          width="55"
+                          height="55"
+                          className="rounded"
+                        />
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
+                    </td>
+                    <td>{p.name}</td>
+                    <td>{p.slug}</td>
+                    <td>{p.brandId?.name || "—"}</td>
+                    <td>{p.categoryId?.name || "—"}</td>
+                    <td className="text-truncate" style={{ maxWidth: "200px" }}>
+                      {p.description || "—"}
+                    </td>
+                    <td>{p.variants?.length || 0}</td>
+                    <td>
+                      <div className="btn-group">
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() =>
+                            navigate(`/admin/products/edit/${p._id}`)
+                          }
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          onClick={() => toggleVariants(p._id)}
+                        >
+                          {expandedProductId === p._id
+                            ? "Ẩn biến thể"
+                            : "Xem biến thể"}
+                        </button>
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => handleDelete(p._id)}
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  {/* 🔽 Hiện danh sách biến thể */}
+                  {expandedProductId === p._id && (
+                    <tr>
+                      <td colSpan="9">
+                        {p.variants && p.variants.length > 0 ? (
+                          <div className="p-3 bg-light rounded border">
+                            <h6 className="fw-semibold mb-3">
+                              Biến thể của {p.name}
+                            </h6>
+                            <div className="row">
+                              {p.variants.map((v, i) => (
+                                <div
+                                  key={i}
+                                  className="col-md-3 col-sm-6 mb-3 text-center"
+                                >
+                                  <div className="card border-0 shadow-sm">
+                                    <img
+                                      src={`http://localhost:8000/${v.image}`}
+                                      alt={v.nameDetail || "variant"}
+                                      className="card-img-top rounded-top"
+                                      height="120"
+                                    />
+                                    <div className="card-body p-2">
+                                      <p className="mb-1 fw-semibold">
+                                        {v.nameDetail || "—"}
+                                      </p>
+                                      <p className="mb-1 text-muted small">
+                                        Giá: {v.price?.toLocaleString("vi-VN")}đ
+                                      </p>
+                                      <p className="mb-0 text-muted small">
+                                        Tồn kho: {v.stock}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-muted text-center p-3">
+                            Không có biến thể nào
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="9" className="text-center py-4 text-muted">
+                  Không có sản phẩm nào
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default ProductManagement;

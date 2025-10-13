@@ -1,0 +1,83 @@
+/* Tổng thể trang */
+.container {
+  max-width: 1000px;
+  margin-top: 40px;
+}
+
+/* Tiêu đề */
+h2 {
+  font-weight: 700;
+  color: #333;
+}
+
+/* Form */
+form {
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+/* Nhãn */
+.form-label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Input và textarea */
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: 0.2s;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
+/* Vùng biến thể */
+.bg-light {
+  background-color: #f8f9fa !important;
+  border: 1px solid #e3e3e3;
+}
+
+/* Nút thêm biến thể */
+.btn-outline-primary {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Nút xoá biến thể */
+.btn-outline-danger {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Nút tạo sản phẩm */
+.btn-success {
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 8px;
+}
+
+/* Ảnh preview */
+img.rounded {
+  border: 2px solid #ddd;
+  object-fit: cover;
+  background: #fafafa;
+}
+
+/* Danh sách sản phẩm fake */
+.list-group-item {
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+.list-group-item:hover {
+  background: #f5f9ff;
+  transition: 0.2s;
+}

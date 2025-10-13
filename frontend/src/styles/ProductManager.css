@@ -1,0 +1,107 @@
+/* Tổng thể vùng nội dung */
+.container {
+  max-width: 85%;
+  padding: 24px;
+  background-color: #f8f9fc;
+  min-height: calc(100vh - 70px);
+  box-sizing: border-box;
+  margin-left: 16%;
+ 
+}
+
+/* Tiêu đề và nút thêm */
+.container h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #222;
+   margin-top: 20px
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  padding: 8px 18px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  margin-top: 20px
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Bảng sản phẩm */
+.table-responsive {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+  margin-bottom: 0;
+  font-size: 15px;
+}
+
+.table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #444;
+  vertical-align: middle;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f9fbfd;
+}
+
+/* Hình ảnh trong bảng */
+.table img {
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Nút Xóa */
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* Căn chỉnh text mô tả */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Khi không có sản phẩm */
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Đáp ứng giao diện nhỏ */
+@media (max-width: 992px) {
+  .container {
+    padding: 16px;
+  }
+
+  .table th, .table td {
+    font-size: 14px;
+  }
+
+  .btn-primary {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
