@@ -6,7 +6,7 @@ const Footer = () => {
     <footer class="footer">
       <div class="container grid">
         <div class="footer-box">
-          <img src="./img/logo.jpg" alt="" />
+          <img src="./public/logo.jpg" alt="" />
           <h3>GIỚI THIỆU</h3>
           <p>
             Shop thời trang thể thao, cam kết mang đến những sản phẩm "Đẹp -

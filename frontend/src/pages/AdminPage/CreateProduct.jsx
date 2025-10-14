@@ -10,7 +10,6 @@ const CreateProduct = () => {
   const [product, setProduct] = useState({
     name: "",
     description: "",
-    slug: "",
     brandId: "",
     categoryId: "",
   });
@@ -22,7 +21,7 @@ const CreateProduct = () => {
   ]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Lấy danh sách Brand & Category
+  // Lấy danh sách Brand & Category
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,7 +57,7 @@ const CreateProduct = () => {
     setVariants(newVariants);
   };
 
-    const addVariant = () => {
+  const addVariant = () => {
     setVariants([
       ...variants,
       { nameDetail: "", price: "", stock: "", image: "", imageFile: null },
@@ -69,21 +68,27 @@ const CreateProduct = () => {
     setVariants(variants.filter((_, i) => i !== index));
   };
 
+  // Hàm tạo slug từ tên sản phẩm
+  const createSlug = (name) => {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")      // thay khoảng trắng bằng "-"
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // ✅ Upload từng ảnh trong variants
+      // Upload ảnh biến thể
       const uploadedVariants = [];
       for (const v of variants) {
         let imagePath = v.image;
-
         if (v.imageFile) {
           const uploadRes = await UploadAPI.uploadSingle(v.imageFile);
           imagePath = uploadRes.path; // server trả về { path: 'uploads/...' }
         }
-
         uploadedVariants.push({
           nameDetail: v.nameDetail,
           price: v.price,
@@ -92,9 +97,10 @@ const CreateProduct = () => {
         });
       }
 
-      // ✅ Tạo payload gửi lên backend
+      // Tạo payload với slug
       const payload = {
         ...product,
+        slug: createSlug(product.name),
         userId,
         variants: uploadedVariants,
       };
@@ -105,14 +111,8 @@ const CreateProduct = () => {
       alert("✅ Tạo sản phẩm thành công!");
       console.log("📦 Product created:", res);
 
-      // ✅ Reset form
-      setProduct({
-        name: "",
-        description: "",
-        slug: "",
-        brandId: "",
-        categoryId: "",
-      });
+      // Reset form
+      setProduct({ name: "", description: "", brandId: "", categoryId: "" });
       setVariants([{ nameDetail: "", price: "", stock: "", image: "", imageFile: null }]);
     } catch (err) {
       console.error("❌ Lỗi tạo sản phẩm:", err);
@@ -125,11 +125,7 @@ const CreateProduct = () => {
   return (
     <div className="create-product container mt-5">
       <h2 className="fw-bold mb-4">Tạo sản phẩm mới</h2>
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-4 rounded shadow-sm border mt-3"
-      >
+      <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow-sm border mt-3">
         {/* --- Thông tin sản phẩm --- */}
         <div className="row mb-3">
           <div className="">
@@ -168,13 +164,10 @@ const CreateProduct = () => {
             >
               <option value="">-- Chọn thương hiệu --</option>
               {brands.map((b) => (
-                <option key={b._id} value={b._id}>
-                  {b.name}
-                </option>
+                <option key={b._id} value={b._id}>{b.name}</option>
               ))}
             </select>
           </div>
-
           <div className="col-md-6">
             <label className="form-label fw-semibold">Danh mục (Category)</label>
             <select
@@ -186,9 +179,7 @@ const CreateProduct = () => {
             >
               <option value="">-- Chọn danh mục --</option>
               {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
+                <option key={c._id} value={c._id}>{c.name}</option>
               ))}
             </select>
           </div>
@@ -202,7 +193,7 @@ const CreateProduct = () => {
           <div key={index} className="variant-box border rounded p-3 mb-3 bg-light">
             <div className="row">
               <div className="col-md-3">
-                <label className="form-label">Color-Size</label>
+                <label className="form-label">Tên chi tiết</label>
                 <input
                   name="nameDetail"
                   className="form-control"
@@ -242,25 +233,12 @@ const CreateProduct = () => {
                   className="form-control"
                   onChange={(e) => handleVariantChange(index, e)}
                 />
-                {v.image && (
-                  <img
-                    src={v.image}
-                    alt="preview"
-                    className="mt-2 rounded preview-img"
-                    width="80"
-                    height="80"
-                  />
-                )}
+                {v.image && <img src={v.image} alt="preview" className="mt-2 rounded preview-img" width="80" height="80" />}
               </div>
             </div>
-
             <div className="text-end mt-2">
               {variants.length > 1 && (
-                <button
-                  type="button"
-                  className="btn btn-outline-danger btn-sm"
-                  onClick={() => removeVariant(index)}
-                >
+                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => removeVariant(index)}>
                   Xóa biến thể
                 </button>
               )}
@@ -268,11 +246,7 @@ const CreateProduct = () => {
           </div>
         ))}
 
-        <button
-          type="button"
-          className="btn btn-outline-primary mb-3"
-          onClick={addVariant}
-        >
+        <button type="button" className="btn btn-outline-primary mb-3" onClick={addVariant}>
           + Thêm biến thể
         </button>
 

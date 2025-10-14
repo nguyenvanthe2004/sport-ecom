@@ -3,7 +3,7 @@ const Variant = require("../models/Variants");
 const slugify = require("slugify");
 
 class ProductController {
-  async getAllProducts(req, res) {
+ async getAllProducts(req, res) {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -18,13 +18,13 @@ class ProductController {
       .limit(limit)
       .lean(); 
 
-    const productIds = products.map((p) => p._id);
+    const productIds = products.map(p => p._id);
     const variants = await Variant.find({ productId: { $in: productIds } }).lean();
 
-    const productsWithVariants = products.map((product) => ({
-      ...product,
-      variants: variants.filter((v) => v.productId.toString() === product._id.toString()),
-    }));
+    const productsWithVariants = products.map(product => {
+      product.variants = variants.filter(v => v.productId.toString() === product._id.toString());
+      return product;
+    });
 
     const totalPages = Math.ceil(totalProducts / limit);
 
@@ -36,14 +36,13 @@ class ProductController {
       products: productsWithVariants,
     });
   } catch (error) {
+    console.error("Error in getAllProducts:", error);
     res.status(500).json({ message: error.message });
   }
 }
 
-
   async createProduct(req, res) {
     try {
-
       const userId = req.user.userId;
 
       if (!userId) {
@@ -52,13 +51,17 @@ class ProductController {
 
       let { name, description, brandId, categoryId, variants } = req.body;
 
+      console.log(req.body);
+
       if (!name || !brandId || !categoryId) {
         return res
           .status(400)
           .json({ message: "Name, Brand, and Category are required" });
       }
 
-      const slug = slugify(name, { lower: true, strict: true });
+      // Tạo slug tự động, đảm bảo unique bằng timestamp
+      const slug =
+        req.body.slug || slugify(name, { lower: true, strict: true });
 
       const newProduct = new Product({
         userId,
@@ -68,7 +71,12 @@ class ProductController {
         categoryId,
         slug,
       });
+
       const savedProduct = await newProduct.save();
+
+      // Xử lý variants
+      if (typeof variants === "string") variants = JSON.parse(variants);
+      variants = variants || [];
 
       for (const variant of variants) {
         const newVariant = new Variant({
@@ -77,6 +85,7 @@ class ProductController {
           image: variant.image,
         });
         await newVariant.save();
+        console.log("Saved variant:", newVariant);
       }
 
       res.status(201).json({
@@ -96,17 +105,21 @@ class ProductController {
       res.status(500).json({ message: error.message });
     }
   }
+
   async updateProduct(req, res) {
     try {
       const { productId } = req.params;
-      const { name, description, brandId, categoryId, variants, slug } =
-        req.body;
+      let { name, description, brandId, categoryId, variants, slug } = req.body;
 
       if (!name || !brandId || !categoryId) {
         return res
           .status(400)
           .json({ message: "Name, Brand, and Category are required" });
       }
+
+      // Sinh slug tự động nếu không có
+      slug =
+        slug || slugify(name, { lower: true, strict: true }) + "-" + Date.now();
 
       const updatedProduct = await Product.findByIdAndUpdate(
         productId,
@@ -118,26 +131,28 @@ class ProductController {
         return res.status(404).json({ message: "Product not found" });
       }
 
-      if (typeof variants === "string") {
-        variants = JSON.parse(variants);
-      }
+      // Xử lý variants
+      if (typeof variants === "string") variants = JSON.parse(variants);
+      variants = variants || [];
 
+      // Cập nhật hoặc thêm mới
       for (const variant of variants) {
         if (variant.id) {
           await Variant.findByIdAndUpdate(variant.id, {
             ...variant,
-            image: variant.image, 
+            image: variant.image,
           });
         } else {
           const newVariant = new Variant({
             ...variant,
             productId: updatedProduct._id,
-            image: variant.image, 
+            image: variant.image,
           });
           await newVariant.save();
         }
       }
 
+      // Xóa các variant bị loại bỏ
       const ids = variants.filter((v) => v.id).map((v) => v.id);
       await Variant.deleteMany({ productId, _id: { $nin: ids } });
 
@@ -152,7 +167,7 @@ class ProductController {
           categoryId: updatedProduct.categoryId,
           slug: updatedProduct.slug,
           variants,
-        }
+        },
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -166,15 +181,17 @@ class ProductController {
       const deletedProduct = await Product.findByIdAndDelete(productId);
       if (!deletedProduct) {
         return res.status(404).json({ message: "Product not found" });
-      } 
+      }
+
       await Variant.deleteMany({ productId });
 
       res.status(200).json({
-        message: "Product and its variants (and images) deleted successfully",
+        message: "Product and its variants deleted successfully",
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   }
 }
+
 module.exports = new ProductController();

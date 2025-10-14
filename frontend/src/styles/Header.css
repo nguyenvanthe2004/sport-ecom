@@ -1,109 +1,97 @@
+/* Header.css */
+
 .header {
-  background: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 20px;
-  gap: 20px;
-}
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-/* Logo */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: white;
-  font-weight: bold;
-  width: 10%;
-}
-.logo img {
-  width: 90%;
-  height: 40px;
+  background-color: #fff; /* nền trắng */
+  color: #000; /* chữ đen */
+  padding: 0.75rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-/* Thanh tìm kiếm */
+.logo img {
+  height: 50px;
+  object-fit: contain;
+}
+
 .search-bar {
-  flex: none;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  background: white;
-  border-radius: 20px;
-  padding: 10px 15px;
-  width: 600px;
-  margin: 0 24px;
+  flex: 1;
+  max-width: 400px;
+  margin: 0 2rem;
+  position: relative;
 }
 
 .search-bar input {
-  border: none;
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 0.95rem;
   outline: none;
-  flex: 1;
-  padding: 10px;
-  font-size: 14px;
-  background: transparent;
-  transition: box-shadow 0.2s, border 0.2s;
 }
 
-.search-bar input:focus {
-  border: 2px solid #008fe5;
-  box-shadow: 0 0 0 2px #cce7ff;
-  background: #f6fcff;
-  border-radius: 12px;
-}
 .search-bar i {
-  color: gray;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
 }
 
-/* Nút tư vấn */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .consult {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: #ff985f;
-  border-radius: 20px;
-  padding: 6px 12px;
-  color: black;
-  font-size: 13px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.consult i {
-  font-size: 16px;
+  gap: 0.5rem;
+  font-size: 0.9rem;
 }
 
-/* Icon chức năng */
+.consult b {
+  margin-left: 0.25rem;
+}
+
 .icons {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 1rem;
 }
+
 .icon {
-  background: #6da5b0;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  position: relative;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  cursor: pointer;
 }
-.icon i {
-  color: black;
-  font-size: 16px;
+
+.icon:hover {
+  color: #555;
 }
-.badge {
+
+.icon .badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  background: orange;
-  color: black;
-  font-size: 10px;
-  font-weight: bold;
+  top: -5px;
+  right: -10px;
+  background-color: #000;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 0 5px;
   border-radius: 50%;
-  padding: 1px 4px;
+}
+
+h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
 }

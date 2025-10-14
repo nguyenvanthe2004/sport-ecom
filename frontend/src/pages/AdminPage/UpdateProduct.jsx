@@ -120,6 +120,8 @@ const UpdateProduct = () => {
         userId,
         variants: uploadedVariants,
       };
+      console.log(payload);
+      
 
       await ProductAPI.update(id, payload);
 

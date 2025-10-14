@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import "../../styles/Home.css"
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,10 +15,12 @@ const Home = () => {
   };
   return (
     <div>
-      <Header />
+      <header>
+        <Header />
+      </header>
       <h1>Welcome to the {currentUser.email}</h1>
       <button onClick={handleSubmit}>Login</button>
-      <Footer />
+      <Footer/>
     </div>
   );
 };
