@@ -1,0 +1,141 @@
+.banner-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 40px;
+}
+
+.banner-main {
+  position: relative;
+  width: 100%;
+  height: 750px;
+  overflow: hidden;
+}
+
+.banner-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: grayscale(100%) brightness(0.6);
+}
+
+/* --- Phần giới thiệu --- */
+.banner-intro {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  text-align: center;
+  max-width: 800px;
+  z-index: 2;
+}
+
+.banner-intro h2 {
+  font-size: 2.8rem;
+  font-weight: 300;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.banner-intro p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* --- Dự án nổi bật --- */
+.banner-projects {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  width: 85%;
+  z-index: 3;
+}
+
+/* --- Mỗi dự án --- */
+.project-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
+  height: 200px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.project-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+}
+
+.project-item:hover img {
+  transform: scale(1.08);
+}
+
+/* --- Tên dự án luôn hiển thị ở giữa ảnh --- */
+.project-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 400;
+  text-align: center;
+  opacity: 1; /* 👉 Luôn hiển thị */
+  transition: background 0.3s ease;
+}
+
+/* Khi hover: làm sáng nền overlay nhẹ */
+.project-item:hover .project-text {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+  .banner-projects {
+    grid-template-columns: repeat(2, 1fr);
+    top: 60%;
+  }
+
+  .banner-main {
+    height: 450px;
+  }
+
+  .banner-intro h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .banner-projects {
+    grid-template-columns: 1fr;
+    width: 90%;
+    top: 65%;
+  }
+
+  .banner-main {
+    height: 400px;
+  }
+
+  .banner-intro {
+    top: 10%;
+  }
+}

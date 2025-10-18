@@ -40,6 +40,53 @@ class ProductController {
     res.status(500).json({ message: error.message });
   }
 }
+  async getProductBySlug(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const product = await Product.findOne({ slug })
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
+        .lean();
+
+      if (!product) {
+        return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+      }
+
+      const variants = await Variant.find({ productId: product._id }).lean();
+
+      product.variants = variants;
+
+      const relatedProducts = await Product.find({
+        categoryId: product.categoryId?._id,
+        _id: { $ne: product._id },
+      })
+        .limit(6)
+        .populate("categoryId", "name")
+        .lean();
+
+      const relatedIds = relatedProducts.map((p) => p._id);
+      const relatedVariants = await Variant.find({
+        productId: { $in: relatedIds },
+      }).lean();
+
+      const relatedWithVariants = relatedProducts.map((p) => ({
+        ...p,
+        variants: relatedVariants.filter(
+          (v) => v.productId.toString() === p._id.toString()
+        ),
+      }));
+
+      res.status(200).json({
+        product,
+        relatedProducts: relatedWithVariants,
+      });
+    } catch (error) {
+      console.error("❌ Lỗi khi lấy sản phẩm theo slug:", error);
+      res.status(500).json({ message: "Lỗi server" });
+    }
+  }
+
 
   async createProduct(req, res) {
     try {
@@ -138,7 +185,7 @@ class ProductController {
       // Cập nhật hoặc thêm mới
       for (const variant of variants) {
         if (variant.id) {
-          await Variant.findByIdAndUpdate(variant.id, {
+          await Variant.findByIdAndUpdate(variant.id, { 
             ...variant,
             image: variant.image,
           });
