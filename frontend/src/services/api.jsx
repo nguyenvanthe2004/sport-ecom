@@ -55,12 +55,15 @@ export const ProductAPI = {
     const response = await axios.get(`${API_URL_PRODUCT}/getAll`);
     return response.data;
   },
-
+  
   create: async (productData) => {
     const response = await axios.post(`${API_URL_PRODUCT}/create`, productData,{ withCredentials: true });
     return response.data;
   },
-
+  getbySlug: async (slug) => { 
+    const response = await axios.get(`${API_URL_PRODUCT}/slug/${slug}`);
+    return response.data;
+  },
   update: async (productId, productData) => {
     const response = await axios.put(`${API_URL_PRODUCT}/update/${productId}`, productData);
     return response.data;

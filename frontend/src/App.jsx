@@ -17,6 +17,8 @@ import CategoryManager from "./pages/AdminPage/CategoryManager";
 import CreateCategory from "./pages/AdminPage/CreateCategory";
 import UpdateCategory from "./pages/AdminPage/UpdateCategory";
 import UpdateProduct from "./pages/AdminPage/UpdateProduct";
+import ProductDetail from "./pages/HomePage/ProductDetail";
+import ProductsPage from "./pages/HomePage/ProductsPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -44,6 +46,9 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<AuthPage formType="login" />} />
         <Route path="/register" element={<AuthPage formType="register" />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/product/:slug" element={<ProductDetail />} />
+        
 
         {/* Khu vực Admin */}
         <Route

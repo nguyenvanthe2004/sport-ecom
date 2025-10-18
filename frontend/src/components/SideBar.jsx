@@ -9,7 +9,7 @@ const SidebarAdmin = () => {
     <aside className="sidebar-admin">
       <div className="sidebar-top">
         <img
-          src="https://via.placeholder.com/60"
+          src="/public/easports.jpg"
           alt="avatar"
           className="avatar"
         />

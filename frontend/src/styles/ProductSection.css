@@ -344,50 +344,59 @@
 
 .toast-notification {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #10b981;
-  color: #ffffff;
+  top: 80px;
+  right: 30px;
+  background: white;
   padding: 16px 24px;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-  z-index: 10000;
-  transform: translateX(400px);
+  z-index: 9999;
+  transform: translateY(-100px);
   opacity: 0;
-  transition: all 0.4s ease;
-  font-weight: 500;
-  font-size: 14px;
-  max-width: 350px;
+  transition: all 0.3s ease;
+  min-width: 300px;
+  border-left: 4px solid #4caf50;
 }
 
 .toast-notification.show {
-  transform: translateX(0);
+  transform: translateY(0);
   opacity: 1;
 }
 
 .toast-icon {
-  width: 24px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.2);
+  width: 28px;
+  height: 28px;
+  background: #4caf50;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
   flex-shrink: 0;
+  position: relative;
 }
 
-.toast-icon svg {
-  color: #ffffff;
+/* Checkmark icon using CSS */
+.toast-icon::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+  top: 6px;
+  left: 10px;
 }
 
 .toast-message {
-  flex: 1;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 500;
 }
-
 /* ============================================
    RESPONSIVE DESIGN
    ============================================ */

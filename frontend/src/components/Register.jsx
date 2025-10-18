@@ -23,7 +23,9 @@ const Register = () => {
     }
     return (
         <div className="register-container">
-            <h2>Đăng ký</h2>
+            <div className='logo-img'>
+                <img src="/public/logo.jpg" alt="" />
+            </div>
             <form className="register-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="fullname">Họ tên:</label>

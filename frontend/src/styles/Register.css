@@ -15,7 +15,9 @@
   color: #222;
   margin-bottom: 32px;
 }
-
+.logo-img{
+    text-align: center;
+}
 /* Form */
 .register-form .form-group {
   margin-bottom: 24px;        /* khoảng cách giữa các input */

@@ -28,7 +28,7 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await ProductAPI.getBySlug(slug);
+        const res = await ProductAPI.getbySlug(slug);
         const p = res.product;
         setProduct(p);
         setRelated(res.relatedProducts || []);

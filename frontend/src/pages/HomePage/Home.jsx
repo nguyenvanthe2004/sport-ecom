@@ -1,26 +1,29 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import "../../styles/Home.css"
+import Slider from "../../components/Slider";
+import CategorySection from "../../components/CategorySection";
+import ProductSection from "../../components/ProductSection";
+import Banner from "../../components/Banner";
+import "../../styles/Home.css";
+import ContactSection from "../../components/ContactSection";
 
 const Home = () => {
-  const navigate = useNavigate();
-
-  const currentUser = useSelector((state) => state.auth.currentUser);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    navigate("/login");
-  };
   return (
-    <div>
-      <header>
-        <Header />
-      </header>
-      <h1>Welcome to the {currentUser.email}</h1>
-      <button onClick={handleSubmit}>Login</button>
-      <Footer/>
+    <div className="home-container">
+      <Header />
+      
+      <CategorySection />
+
+      <Slider />
+
+      <ProductSection />
+
+      <Banner />
+
+      <ContactSection />
+
+      <Footer />
     </div>
   );
 };

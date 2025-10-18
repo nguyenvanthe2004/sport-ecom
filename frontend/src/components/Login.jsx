@@ -37,7 +37,9 @@ const Login = () => {
     }
     return (
         <div className="login-container">
-            <h2>Đăng nhập</h2>
+            <div className="logo-img">
+                <img src="/public/logo.jpg" alt="" />
+            </div>
             <form className="login-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>

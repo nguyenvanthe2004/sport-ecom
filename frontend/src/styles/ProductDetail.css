@@ -681,7 +681,7 @@
 /* ========== TOAST NOTIFICATION ========== */
 .toast-notification {
   position: fixed;
-  top: 60px;
+  top: 80px;
   right: 30px;
   background: white;
   padding: 16px 24px;
@@ -695,9 +695,6 @@
   opacity: 0;
   transition: all 0.3s ease;
   min-width: 300px;
-}
-
-.toast-notification.success {
   border-left: 4px solid #4caf50;
 }
 
@@ -716,6 +713,20 @@
   justify-content: center;
   color: white;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* Checkmark icon using CSS */
+.toast-icon::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+  top: 6px;
+  left: 10px;
 }
 
 .toast-message {
