@@ -5,6 +5,7 @@ const productRoutes = require('./product');
 const variantRoutes = require('./variant');
 const orderRoutes = require('./order');
 const cartRoutes = require('./cart');
+const cartitemRoutes = require('./cartitem');
 const paymentRoutes = require('./payment');
 const uploadRoutes = require('./upload');
 
@@ -22,6 +23,8 @@ function route(app) {
     app.use('/order', orderRoutes);
 
     app.use('/cart', cartRoutes);
+
+    app.use('/cartitem', cartitemRoutes);
     
     app.use('/payment', paymentRoutes);
 
