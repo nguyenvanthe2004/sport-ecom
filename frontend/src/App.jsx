@@ -19,6 +19,7 @@ import UpdateCategory from "./pages/AdminPage/UpdateCategory";
 import UpdateProduct from "./pages/AdminPage/UpdateProduct";
 import ProductDetail from "./pages/HomePage/ProductDetail";
 import ProductsPage from "./pages/HomePage/ProductsPage";
+import CartPage from "./pages/HomePage/CartPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -49,6 +50,7 @@ function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
         
+        <Route path="/cart" element={<CartPage />} />
 
         {/* Khu vực Admin */}
         <Route
