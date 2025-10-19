@@ -13,6 +13,7 @@ import ProductManager from "./components/ProductManager/ProductManager";
 import CategoryManager from "./components/CategoryManager/CategoryManager";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import CartPage from "./pages/HomePage/CartPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<AuthPage formType="login" />} />
         <Route path="/register" element={<AuthPage formType="register" />} />
+        <Route path="/cart" element={<CartPage />} />
 
         {/* Khu vực Admin */}
         <Route
