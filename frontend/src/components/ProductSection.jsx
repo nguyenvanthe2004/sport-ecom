@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ProductAPI } from "../services/api";
+import { CartAPI, ProductAPI } from "../services/api";
 import { Eye, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProductSection.css";
+import { useSelector } from "react-redux";
 
 const ProductSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -24,30 +27,7 @@ const ProductSection = () => {
     fetchProducts();
   }, []);
 
-  const addToCart = (product, e) => {
-    e.stopPropagation();
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const exist = cart.find((item) => item._id === product._id);
-
-    if (exist) {
-      exist.quantity += 1;
-    } else {
-      cart.push({
-        _id: product._id,
-        name: product.name,
-        image: product.variants?.[0]?.image,
-        price: product.variants?.[0]?.price || 0,
-        quantity: 1,
-      });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event('cartUpdated'));
-    
-    // Toast notification thay vì alert
-    showToast("Đã thêm vào giỏ hàng!");
-  };
-
+  // ✅ Toast thông báo đơn giản
   const showToast = (message) => {
     const toast = document.createElement("div");
     toast.className = "toast-notification";
@@ -60,20 +40,35 @@ const ProductSection = () => {
       <span class="toast-message">${message}</span>
     `;
     document.body.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.classList.add("show");
-    }, 100);
-    
+
+    setTimeout(() => toast.classList.add("show"), 100);
     setTimeout(() => {
       toast.classList.remove("show");
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   };
 
+  const addToCart = async (product, e) => {
+    e?.stopPropagation?.();
+    try {
+      const variantId = product.variants?.[0]?._id;
+      const quantity = 1;
+
+      if (currentUser && currentUser.userId) {
+        await CartAPI.addToCart(variantId, quantity);
+        window.dispatchEvent(new Event("cartUpdated"));
+        showToast("Đã thêm vào giỏ hàng!");
+      } else {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
+      showToast("Thêm vào giỏ hàng thất bại!");
+    }
+  };
+
   return (
     <section className="product-section">
-
       {loading ? (
         <div className="loading-container">
           <div className="spinner"></div>
@@ -82,8 +77,8 @@ const ProductSection = () => {
       ) : (
         <div className="product-grid">
           {products.map((p) => (
-            <div 
-              key={p._id} 
+            <div
+              key={p._id}
               className="product-card"
               onClick={() => navigate(`/product/${p.slug}`)}
             >
@@ -97,7 +92,7 @@ const ProductSection = () => {
                   alt={p.name}
                   className="product-image"
                 />
-                
+
                 <div className="product-overlay">
                   <div className="product-actions">
                     <button
@@ -140,7 +135,10 @@ const ProductSection = () => {
                         </span>
                         {p.variants[0].originalPrice && (
                           <span className="product-price-old">
-                            {p.variants[0].originalPrice.toLocaleString("vi-VN")}₫
+                            {p.variants[0].originalPrice.toLocaleString(
+                              "vi-VN"
+                            )}
+                            ₫
                           </span>
                         )}
                       </>

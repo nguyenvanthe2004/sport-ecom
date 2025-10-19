@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { CategoryAPI, ProductAPI } from "../../services/api"; // import API của bạn
+import { CartAPI, CategoryAPI, ProductAPI } from "../../services/api"; // import API của bạn
 import "../../styles/ProductsPage.css";
 import { ShoppingCart, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { useSelector } from "react-redux";
 
 const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
@@ -14,6 +15,8 @@ const ProductsPage = () => {
   const [priceFilter, setPriceFilter] = useState("");
 
   const navigate = useNavigate();
+
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,28 +63,23 @@ const ProductsPage = () => {
 
     setFiltered(data);
   }, [selectedCat, priceFilter, products]);
-  const addToCart = (product, e) => {
-    e.stopPropagation();
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const exist = cart.find((item) => item._id === product._id);
+  const addToCart = async (product, e) => {
+    e?.stopPropagation?.();
+    try {
+      const variantId = product.variants?.[0]?._id;
+      const quantity = 1;
 
-    if (exist) {
-      exist.quantity += 1;
-    } else {
-      cart.push({
-        _id: product._id,
-        name: product.name,
-        image: product.variants?.[0]?.image,
-        price: product.variants?.[0]?.price || 0,
-        quantity: 1,
-      });
+      if (currentUser && currentUser.userId) {
+        await CartAPI.addToCart(variantId, quantity);
+        window.dispatchEvent(new Event("cartUpdated"));
+        showToast("Đã thêm vào giỏ hàng!");
+      } else {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
+      showToast("Thêm vào giỏ hàng thất bại!");
     }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
-
-    // Toast notification thay vì alert
-    showToast("Đã thêm vào giỏ hàng!");
   };
   const showToast = (message) => {
     const toast = document.createElement("div");

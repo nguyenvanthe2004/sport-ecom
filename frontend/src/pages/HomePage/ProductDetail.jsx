@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ProductAPI } from "../../services/api";
+import { CartAPI, ProductAPI } from "../../services/api";
 import {
   ShoppingCart,
   Eye,
@@ -13,6 +13,7 @@ import {
 import "../../styles/ProductDetail.css";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { useSelector } from "react-redux";
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -25,6 +26,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [currentVariant, setCurrentVariant] = useState(null);
 
+  const currentUser = useSelector((state) => state.auth.currentUser);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,31 +37,29 @@ const ProductDetail = () => {
         setRelated(res.relatedProducts || []);
 
         if (p?.variants?.length > 0) {
-          const defaultImage = `http://localhost:8000/${p.variants[0].image}`;
-          setMainImage(defaultImage);
+          const defaultVariant = p.variants[0];
+          setMainImage(`http://localhost:8000/${defaultVariant.image}`);
 
-          // lấy danh sách color và size từ nameDetail
-          const [firstColor, firstSize] = p.variants[0].nameDetail.split("-");
+          const [firstColor, firstSize] = defaultVariant.nameDetail.split("-");
           setSelectedColor(firstColor?.trim() || "");
           setSelectedSize(firstSize?.trim() || "");
-          setCurrentVariant(p.variants[0]);
+          setCurrentVariant(defaultVariant);
         }
       } catch (err) {
-        console.error("Lỗi khi tải sản phẩm:", err);
+        console.error("❌ Lỗi khi tải sản phẩm:", err);
       }
     };
     fetchData();
   }, [slug]);
 
-  // tách tất cả color và size duy nhất
   const colors = [
     ...new Set(
-      product?.variants?.map((v) => v.nameDetail.split("-")[0].trim())
+      product?.variants?.map((v) => v.nameDetail.split("-")[0].trim()) || []
     ),
   ];
   const sizes = [
     ...new Set(
-      product?.variants?.map((v) => v.nameDetail.split("-")[1]?.trim())
+      product?.variants?.map((v) => v.nameDetail.split("-")[1]?.trim()) || []
     ),
   ];
 
@@ -75,11 +76,19 @@ const ProductDetail = () => {
     }
   }, [selectedColor, selectedSize, product]);
 
-  const showToast = (message, type = "success") => {
+  const showToast = (message) => {
     const toast = document.createElement("div");
-    toast.className = `toast-notification ${type}`;
-    toast.textContent = message;
+    toast.className = "toast-notification";
+    toast.innerHTML = `
+      <div class="toast-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <span class="toast-message">${message}</span>
+    `;
     document.body.appendChild(toast);
+
     setTimeout(() => toast.classList.add("show"), 100);
     setTimeout(() => {
       toast.classList.remove("show");
@@ -87,31 +96,27 @@ const ProductDetail = () => {
     }, 3000);
   };
 
-  const addToCart = () => {
-    if (!product || !currentVariant) return;
-
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const exist = cart.find((item) => item.variantId === currentVariant._id);
-
-    if (exist) {
-      exist.quantity += quantity;
-    } else {
-      cart.push({
-        _id: product._id,
-        variantId: currentVariant._id,
-        name: product.name,
-        image: currentVariant.image,
-        price: currentVariant.price,
-        quantity,
-        color: selectedColor,
-        size: selectedSize,
-      });
+ const addToCart = async (e) => {
+  e?.stopPropagation?.();
+  try {
+    if (!currentVariant?._id) {
+      showToast("Vui lòng chọn màu và kích cỡ!", "error");
+      return;
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
-    showToast(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
-  };
+    if (currentUser && currentUser.userId) {
+      await CartAPI.addToCart(currentVariant._id, quantity);
+      window.dispatchEvent(new Event("cartUpdated"));
+      showToast("Đã thêm vào giỏ hàng!");
+    } else {
+      navigate("/login");
+    }
+  } catch (error) {
+    console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
+    showToast("Thêm vào giỏ hàng thất bại!");
+  }
+};
+
 
   const buyNow = () => {
     addToCart();
@@ -134,7 +139,6 @@ const ProductDetail = () => {
     <div className="product-detail-container">
       <Header />
 
-      {/* Breadcrumb */}
       <div className="breadcrumb">
         <span onClick={() => navigate("/")}>Trang chủ</span>
         <span className="separator">/</span>
@@ -156,6 +160,7 @@ const ProductDetail = () => {
               <div className="discount-badge-large">-{discount}%</div>
             )}
           </div>
+
           <div className="thumbnail-list">
             {product.variants?.map((v, i) => (
               <img
@@ -173,7 +178,7 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Thông tin sản phẩm */}
+        {/* Thông tin */}
         <div className="product-info-section">
           <div className="product-header">
             <h1 className="product-title">{product.name}</h1>
@@ -226,11 +231,9 @@ const ProductDetail = () => {
               {colors.map((color, i) => (
                 <button
                   key={i}
-                  className={
-                    selectedColor === color
-                      ? "variant-btn active"
-                      : "variant-btn"
-                  }
+                  className={`variant-btn ${
+                    selectedColor === color ? "active" : ""
+                  }`}
                   onClick={() => setSelectedColor(color)}
                 >
                   {color}
@@ -246,9 +249,9 @@ const ProductDetail = () => {
               {sizes.map((size, i) => (
                 <button
                   key={i}
-                  className={
-                    selectedSize === size ? "variant-btn active" : "variant-btn"
-                  }
+                  className={`variant-btn ${
+                    selectedSize === size ? "active" : ""
+                  }`}
                   onClick={() => setSelectedSize(size)}
                 >
                   {size}
@@ -303,7 +306,7 @@ const ProductDetail = () => {
         <div className="description-content">
           <p>{product.description || "Chưa có mô tả cho sản phẩm này."}</p>
         </div>
-        {/* Tính năng */}
+
         <div className="product-features">
           <div className="feature-item">
             <Truck size={24} />
@@ -333,7 +336,6 @@ const ProductDetail = () => {
       {related.length > 0 && (
         <div className="related-products-section">
           <h2 className="section-title">Sản phẩm tương tự</h2>
-
           <div className="product-grid">
             {related.map((p) => (
               <div
@@ -351,7 +353,6 @@ const ProductDetail = () => {
                     alt={p.name}
                     className="product-image"
                   />
-
                   <div className="product-overlay">
                     <div className="product-actions">
                       <button
@@ -368,42 +369,7 @@ const ProductDetail = () => {
                       <button
                         className="action-btn cart-btn"
                         title="Thêm vào giỏ"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const cart =
-                            JSON.parse(localStorage.getItem("cart")) || [];
-                          const exist = cart.find((item) => item._id === p._id);
-                          if (exist) {
-                            exist.quantity += 1;
-                          } else {
-                            cart.push({
-                              _id: p._id,
-                              name: p.name,
-                              image: p.variants?.[0]?.image,
-                              price: p.variants?.[0]?.price || 0,
-                              quantity: 1,
-                            });
-                          }
-                          localStorage.setItem("cart", JSON.stringify(cart));
-                          window.dispatchEvent(new Event("cartUpdated"));
-                          const toast = document.createElement("div");
-                          toast.className = "toast-notification";
-                          toast.innerHTML = `
-                      <div class="toast-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </div>
-                      <span class="toast-message">Đã thêm vào giỏ hàng!</span>
-                    `;
-                          document.body.appendChild(toast);
-                          setTimeout(() => toast.classList.add("show"), 100);
-                          setTimeout(() => {
-                            toast.classList.remove("show");
-                            setTimeout(() => toast.remove(), 300);
-                          }, 3000);
-                        }}
+                        onClick={(e) => addToCart(p, e)}
                       >
                         <ShoppingCart size={18} />
                         <span>Giỏ hàng</span>
@@ -420,26 +386,24 @@ const ProductDetail = () => {
 
                 <div className="product-info">
                   <h3 className="product-name">{p.name}</h3>
-                  <div className="product-footer">
-                    <div className="product-price-wrapper">
-                      {p.variants?.[0]?.price ? (
-                        <>
-                          <span className="product-price">
-                            {p.variants[0].price.toLocaleString("vi-VN")}₫
+                  <div className="product-price-wrapper">
+                    {p.variants?.[0]?.price ? (
+                      <>
+                        <span className="product-price">
+                          {p.variants[0].price.toLocaleString("vi-VN")}₫
+                        </span>
+                        {p.variants[0].originalPrice && (
+                          <span className="product-price-old">
+                            {p.variants[0].originalPrice.toLocaleString(
+                              "vi-VN"
+                            )}
+                            ₫
                           </span>
-                          {p.variants[0].originalPrice && (
-                            <span className="product-price-old">
-                              {p.variants[0].originalPrice.toLocaleString(
-                                "vi-VN"
-                              )}
-                              ₫
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="product-price">Liên hệ</span>
-                      )}
-                    </div>
+                        )}
+                      </>
+                    ) : (
+                      <span className="product-price">Liên hệ</span>
+                    )}
                   </div>
                 </div>
               </div>
