@@ -3,43 +3,40 @@ const Variant = require("../models/Variants");
 const slugify = require("slugify");
 
 class ProductController {
- async getAllProducts(req, res) {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+  async getAllProducts(req, res) {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
 
-    const totalProducts = await Product.countDocuments();
+      const totalProducts = await Product.countDocuments();
 
-    const products = await Product.find()
-      .populate("brandId", "name")
-      .populate("categoryId", "name")
-      .skip(skip)
-      .limit(limit)
-      .lean(); 
+      const products = await Product.find()
+        .populate("brandId", "name") 
+        .populate("categoryId", "name") 
+        .populate({
+          path: "variants", 
+          select: "nameDetail price stock image", 
+        })
+        .sort({ createAt: -1 }) 
+        .skip(skip)
+        .limit(limit)
+        .lean();
 
-    const productIds = products.map(p => p._id);
-    const variants = await Variant.find({ productId: { $in: productIds } }).lean();
+      const totalPages = Math.ceil(totalProducts / limit);
 
-    const productsWithVariants = products.map(product => {
-      product.variants = variants.filter(v => v.productId.toString() === product._id.toString());
-      return product;
-    });
-
-    const totalPages = Math.ceil(totalProducts / limit);
-
-    res.status(200).json({
-      page,
-      limit,
-      totalPages,
-      totalProducts,
-      products: productsWithVariants,
-    });
-  } catch (error) {
-    console.error("Error in getAllProducts:", error);
-    res.status(500).json({ message: error.message });
+      res.status(200).json({
+        page,
+        limit,
+        totalPages,
+        totalProducts,
+        products,
+      });
+    } catch (error) {
+      console.error("Error in getAllProducts:", error);
+      res.status(500).json({ message: error.message });
+    }
   }
-}
   async getProductBySlug(req, res) {
     try {
       const { slug } = req.params;
@@ -87,7 +84,6 @@ class ProductController {
     }
   }
 
-
   async createProduct(req, res) {
     try {
       const userId = req.user.userId;
@@ -109,8 +105,7 @@ class ProductController {
       // Tạo slug tự động, đảm bảo unique bằng timestamp
       const slug =
         req.body.slug || slugify(name, { lower: true, strict: true });
-
-      const newProduct = new Product({
+const newProduct = new Product({
         userId,
         name,
         description,
@@ -121,7 +116,6 @@ class ProductController {
 
       const savedProduct = await newProduct.save();
 
-      // Xử lý variants
       if (typeof variants === "string") variants = JSON.parse(variants);
       variants = variants || [];
 
@@ -129,10 +123,12 @@ class ProductController {
         const newVariant = new Variant({
           ...variant,
           productId: savedProduct._id,
-          image: variant.image,
         });
-        await newVariant.save();
-        console.log("Saved variant:", newVariant);
+        const savedVariant = await newVariant.save();
+
+        await Product.findByIdAndUpdate(savedProduct._id, {
+          $push: { variants: savedVariant._id },
+        });
       }
 
       res.status(201).json({
@@ -185,7 +181,7 @@ class ProductController {
       // Cập nhật hoặc thêm mới
       for (const variant of variants) {
         if (variant.id) {
-          await Variant.findByIdAndUpdate(variant.id, { 
+          await Variant.findByIdAndUpdate(variant.id, {
             ...variant,
             image: variant.image,
           });
@@ -196,6 +192,9 @@ class ProductController {
             image: variant.image,
           });
           await newVariant.save();
+          await Product.findByIdAndUpdate(savedProduct._id, {
+          $push: { variants: savedVariant._id },
+        });
         }
       }
 
@@ -208,7 +207,7 @@ class ProductController {
         product: {
           userId: updatedProduct.userId,
           productId: updatedProduct._id,
-          name: updatedProduct.name,
+name: updatedProduct.name,
           description: updatedProduct.description,
           brandId: updatedProduct.brandId,
           categoryId: updatedProduct.categoryId,
