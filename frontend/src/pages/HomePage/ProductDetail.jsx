@@ -13,7 +13,9 @@ import {
 import "../../styles/ProductDetail.css";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import LoadingPage from "../../components/LoadingPage";
+import { addToCart, fetchCart } from "../../redux/slices/cartSlice";
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -25,12 +27,15 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [currentVariant, setCurrentVariant] = useState(null);
-
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
+  const cart = useSelector((state) => state.cart.items);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await ProductAPI.getbySlug(slug);
         const p = res.product;
         setProduct(p);
@@ -47,10 +52,15 @@ const ProductDetail = () => {
         }
       } catch (err) {
         console.error("❌ Lỗi khi tải sản phẩm:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, [slug]);
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   const colors = [
     ...new Set(
@@ -96,38 +106,31 @@ const ProductDetail = () => {
     }, 3000);
   };
 
- const addToCart = async (e) => {
-  e?.stopPropagation?.();
-  try {
-    if (!currentVariant?._id) {
-      showToast("Vui lòng chọn màu và kích cỡ!", "error");
+  const handleAddToCart = async (e) => {
+    e?.stopPropagation?.();
+
+    if (!currentUser || !currentUser.userId) {
+      navigate("/login");
       return;
     }
 
-    if (currentUser && currentUser.userId) {
-      await CartAPI.addToCart(currentVariant._id, quantity);
-      window.dispatchEvent(new Event("cartUpdated"));
+    try {
+      await dispatch(addToCart(product, 1));
       showToast("Đã thêm vào giỏ hàng!");
-    } else {
-      navigate("/login");
+    } catch (error) {
+      console.error("❌ Thêm vào giỏ hàng thất bại:", error);
+      showToast("Thêm vào giỏ hàng thất bại!");
     }
-  } catch (error) {
-    console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
-    showToast("Thêm vào giỏ hàng thất bại!");
-  }
-};
-
-
-  const buyNow = () => {
-    addToCart();
-    setTimeout(() => navigate("/cart"), 500);
   };
 
+  const buyNow = () => {
+    navigate("/checkout", {});
+  };
+  if (loading) return <LoadingPage />;
   if (!product)
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p className="loading-text">Đang tải sản phẩm...</p>
+      <div className="error-container">
+        <p className="error-text">Không tìm thấy sản phẩm.</p>
       </div>
     );
 
@@ -289,7 +292,7 @@ const ProductDetail = () => {
 
           {/* Nút hành động */}
           <div className="product-actions">
-            <button className="btn-add-cart" onClick={addToCart}>
+            <button className="btn-add-cart" onClick={(e) => handleAddToCart(product, e)}>
               <ShoppingCart size={20} />
               <span>Thêm vào giỏ</span>
             </button>
@@ -356,7 +359,7 @@ const ProductDetail = () => {
                   <div className="product-overlay">
                     <div className="product-actions">
                       <button
-                        className="action-btn view-btn"
+                        className="actions-btn view-btn"
                         title="Xem chi tiết"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -367,7 +370,7 @@ const ProductDetail = () => {
                         <span>Xem</span>
                       </button>
                       <button
-                        className="action-btn cart-btn"
+                        className="actions-btn cart-btn"
                         title="Thêm vào giỏ"
                         onClick={(e) => addToCart(p, e)}
                       >

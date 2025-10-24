@@ -1,10 +1,9 @@
 /* Vùng chứa chính */
 .category-manager {
   max-width: 85%;
-  padding: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  margin-left: 16%;
+  margin-left: 12%;
   margin-bottom: 50px;
 }
 

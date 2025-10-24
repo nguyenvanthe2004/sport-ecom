@@ -1,11 +1,10 @@
 /* Tổng thể vùng nội dung */
 .container {
   max-width: 85%;
-  padding: 24px;
   background-color: #f8f9fc;
   min-height: calc(100vh - 70px);
   box-sizing: border-box;
-  margin-left: 16%;
+  margin-left: 12%;
  
 }
 

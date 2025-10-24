@@ -2,64 +2,54 @@ import React, { useEffect, useState } from "react";
 import "../../styles/CartPage.css";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { CartAPI } from "../../services/api";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart, removeFromCart, updateCartQuantity,clearCart } from "../../redux/slices/cartSlice";
+import LoadingPage from "../../components/LoadingPage";
+import { useNavigate } from "react-router-dom";
+import { setCheckoutItems } from "../../redux/slices/cartSlice";
+
 
 const CartPage = () => {
-  const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart.items);
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
-  const isLoggedIn =
-    document.cookie.includes("token") || localStorage.getItem("user");
-
-  const fetchCart = async () => {
-    setLoading(true);
-    try {
-      const data = await CartAPI.getMyCart();
-      setCart(data?.cartItems || []);
-    } catch (error) {
-      console.error("❌ Lỗi khi tải giỏ hàng:", error);
-      setCart([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const isLoggedIn = currentUser.role === "user";
 
   useEffect(() => {
-    fetchCart();
-  }, [isLoggedIn]);
+    const loadCart = async () => {
+      await dispatch(fetchCart());
+      setLoading(false);
+    };
+    loadCart();
+  }, [dispatch]);
 
   const updateQuantity = async (variantId, amount) => {
     const item = cart.find((i) => i._id === variantId);
     if (!item) return;
-
     const newQuantity = Math.max(item.quantity + amount, 1);
 
     try {
-      await CartAPI.updateCartItem(variantId, { quantity: newQuantity });
-      await fetchCart();
-
+      await dispatch(updateCartQuantity(variantId, newQuantity));
       showToast("Đã cập nhật giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi khi cập nhật số lượng:", error);
     }
   };
 
-  const removeItem = async (id) => {
+const removeItem = async (id) => {
     try {
-      await CartAPI.removeCartItem(id);
-      fetchCart();
-      window.dispatchEvent(new Event("cartUpdated"));
+      await dispatch(removeFromCart(id));
       showToast("Đã xóa sản phẩm khỏi giỏ hàng!");
     } catch (error) {
-      console.error("Lỗi xoá sản phẩm:", error);
+      console.error("❌ Lỗi khi xóa sản phẩm:", error);
     }
   };
-
-  const clearCart = async () => {
+  const handleClearCart = async () => {
     try {
-      await CartAPI.clearCart();
-      fetchCart();
-      window.dispatchEvent(new Event("cartUpdated"));
+      await dispatch(clearCart());
       showToast("Đã làm trống giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi khi xóa toàn bộ giỏ hàng:", error);
@@ -71,7 +61,15 @@ const CartPage = () => {
     0
   );
 
-  const handleClick = () => (window.location.href = "/home");
+  const handleClick = () => (navigate("/home"));
+  const handleCheckout = () => {
+    if (isLoggedIn) {
+      dispatch(setCheckoutItems(cart));
+      navigate("/checkout");
+    } else {
+      navigate("/login");
+    }
+  };
 
   const showToast = (message) => {
     const toast = document.createElement("div");
@@ -96,12 +94,7 @@ const CartPage = () => {
   if (loading)
     return (
       <>
-        <Header />
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Đang tải giỏ hàng...</p>
-        </div>
-        <Footer />
+        <LoadingPage />
       </>
     );
 
@@ -189,8 +182,8 @@ const CartPage = () => {
                     {totalPrice.toLocaleString("vi-VN")}₫
                   </span>
                 </div>
-                <button className="checkout-btn">Thanh toán</button>
-                <button className="clear-btn" onClick={clearCart}>
+                <button className="checkout-btn" onClick={handleCheckout}>Thanh toán</button>
+                <button className="clear-btn" onClick={handleClearCart}>
                   Xóa toàn bộ
                 </button>
                 <button className="continue-btn" onClick={handleClick}>

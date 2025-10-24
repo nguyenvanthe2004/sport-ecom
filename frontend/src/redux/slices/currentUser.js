@@ -7,7 +7,6 @@ const initialState = {
     fullname: "",
     role: "",
   },
-  loading: true,
 };
 
 export const userCurrentSlice = createSlice({
@@ -28,14 +27,11 @@ export const userCurrentSlice = createSlice({
       };
       state.loading = false;
     },
-    setLoading: (state) => {
-      state.loading = true;
-    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setCurrentUser, clearCurrentUser, setLoading } =
+export const { setCurrentUser, clearCurrentUser } =
   userCurrentSlice.actions;
 
 export default userCurrentSlice.reducer;

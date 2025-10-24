@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useSelector } from "react-redux";
+import ProductSection from "../../components/ProductSection";
 
 const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
@@ -106,11 +107,6 @@ const ProductsPage = () => {
   return (
     <>
       <Header />
-      <div class="breadcrumb-nav">
-        <span onClick={() => navigate("/")}>Trang chủ</span>
-        <span class="separator">/</span>
-        <span>Products</span>
-      </div>
       <div className="products-page">
         {/* Sidebar bên trái */}
         <aside className="sidebar">
@@ -197,68 +193,13 @@ const ProductsPage = () => {
         </aside>
 
         {/* Danh sách sản phẩm */}
-        <section className="products-section">
-          <h2>{selectedCat ? selectedCat : "Danh Sách Sản Phẩm"}</h2>
-
-          <div className="product-grid">
-            {filtered.length > 0 ? (
-              filtered.map((p) => (
-                <div
-                  key={p._id}
-                  className="product-card"
-                  onClick={() => navigate(`/product/${p.slug}`)}
-                >
-                  <div className="product-image-wrapper">
-                    <img
-                      src={
-                        p.variants?.[0]?.image
-                          ? `http://localhost:8000/${p.variants[0].image}`
-                          : "/no-image.jpg"
-                      }
-                      alt={p.name}
-                      className="product-image"
-                    />
-                    <div className="product-overlay-1">
-                      <button
-                        className="action-btn view-btn"
-                        title="Xem chi tiết"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/product/${p.slug}`);
-                        }}
-                      >
-                        <Eye size={18} />
-                        <span>Xem</span>
-                      </button>
-                      <button
-                        className="action-btn cart-btn"
-                        title="Thêm vào giỏ"
-                        onClick={(e) => addToCart(p, e)}
-                      >
-                        <ShoppingCart size={18} />
-                        <span>Giỏ hàng</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="product-info">
-                    <h3 className="product-name">{p.name}</h3>
-                    <span className="product-price">
-                      {p.variants?.[0]?.price
-                        ? p.variants[0].price.toLocaleString("vi-VN") + "đ"
-                        : "Liên hệ"}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p>Không có sản phẩm nào phù hợp</p>
-            )}
-          </div>
-        </section>
+        <div className="productList">
+          <ProductSection />
+        </div>
       </div>
       <Footer />
     </>
   );
-};
+}
 
 export default ProductsPage;

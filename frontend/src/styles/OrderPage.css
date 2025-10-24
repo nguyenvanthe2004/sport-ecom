@@ -1,0 +1,271 @@
+/* ==================== ORDER PAGE ==================== */
+.order-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  margin-top: 100px;
+}
+
+.order-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ==================== TITLE ==================== */
+.order-title {
+  font-size: 2.0rem;
+  font-weight: 700;
+  color: #2d3748;
+  text-align: center;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.order-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+/* ==================== EMPTY ORDER ==================== */
+.empty-order {
+  background: white;
+  padding: 80px 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.empty-order p {
+  font-size: 1.2rem;
+  color: #718096;
+  margin-bottom: 30px;
+}
+
+.continue-shopping {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.continue-shopping:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+/* ==================== ORDER LIST ==================== */
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ==================== ORDER CARD ==================== */
+.order-card {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #dbdbdb;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ==================== ORDER HEADER ==================== */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: #f7fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.order-header > span:first-child {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4a5568;
+  font-family: 'Courier New', monospace;
+}
+
+/* ==================== ORDER STATUS ==================== */
+.order-status {
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-status.pending {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3);
+}
+
+.order-status.shipped {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+
+.order-status.delivered {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+.order-status.cancelled {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+}
+
+/* ==================== ORDER BODY ==================== */
+.order-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-item {
+  display: flex;
+  gap: 16px;
+  padding: 10px;
+  background: #f7fafc;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.order-item:hover {
+  background: #edf2f7;
+}
+
+.order-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.item-info p {
+  font-size: 0.9rem;
+  color: #718096;
+  margin: 0;
+}
+
+.item-info p:last-child {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+/* ==================== ORDER FOOTER ==================== */
+.order-footer {
+  padding: 20px 24px;
+  background: #f7fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-footer p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.order-footer p strong {
+  color: #e53e3e;
+  font-size: 1.1rem;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .order-page {
+    padding: 20px 10px;
+  }
+
+  .order-title {
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .order-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .order-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .order-item img {
+    width: 100%;
+    height: 200px;
+    margin: 0 auto;
+  }
+
+  .empty-order {
+    padding: 60px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-title {
+    font-size: 1.5rem;
+  }
+
+  .order-status {
+    padding: 6px 16px;
+    font-size: 0.8rem;
+  }
+
+  .order-item img {
+    height: 150px;
+  }
+}

@@ -87,7 +87,7 @@ const UpdateCategory = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary me-2" >
           Cập nhật
         </button>
         <button

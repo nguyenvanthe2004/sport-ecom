@@ -7,6 +7,8 @@
   max-width: 1400px;
   margin: 0 auto;
   background: #ffffff;
+
+  
 }
 
 /* ============================================
@@ -166,7 +168,7 @@
   transform: translateY(0);
 }
 
-.action-btn {
+.actions-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,16 +203,16 @@
   transform: translateY(-2px);
 }
 
-.action-btn span {
+.actions-btn span {
   font-weight: 600;
 }
 
 @media (max-width: 768px) {
-  .action-btn span {
+  .actions-btn span {
     display: none;
   }
   
-  .action-btn {
+  .actions-btn {
     padding: 8px;
     border-radius: 4px;
   }
@@ -474,7 +476,7 @@ html {
    ACCESSIBILITY
    ============================================ */
 
-.action-btn:focus,
+.actions-btn:focus,
 .product-card:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
