@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CategoryAPI } from "../../services/api"; // import API của bạn
 import "../../styles/CategoryManager.css";
 
@@ -7,6 +7,7 @@ const CategoryManager = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // Lấy danh sách categories từ API
   const fetchCategories = async () => {
@@ -70,14 +71,16 @@ const CategoryManager = () => {
                   <td>{c.description}</td>
                   <td>
                     <div className="d-flex gap-2">
-                      <Link
-                        to={`/admin/categories/edit/${c._id}`}
-                        className="btn-action btn-edit"
+                      <button
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() =>
+                          navigate(`/admin/categories/edit/${c._id}`)
+                        }
                       >
                         Sửa
-                      </Link>
+                      </button>
                       <button
-                        className="btn-action btn-delete"
+                        className="btn btn-outline-danger btn-sm"
                         onClick={() => handleDelete(c._id)}
                       >
                         Xóa

@@ -17,6 +17,7 @@
   top: 0;
   z-index: 1000;
   transition: all 0.3s ease;
+  max-height: 95px;
 }
 
 .logo {
@@ -50,14 +51,14 @@
   background-clip: text;
 }
 
-.search-bar {
+.search-bars {
   flex: 1;
   max-width: 500px;
   margin: 0 2rem;
   position: relative;
 }
 
-.search-bar input {
+.search-bars input {
   width: 100%;
   padding: 0.75rem 3rem 0.75rem 1.25rem;
   border: 2px solid #e0e0e0;
@@ -68,20 +69,20 @@
   transition: all 0.3s ease;
 }
 
-.search-bar input:focus {
+.search-bars input:focus {
   background: white;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   transform: translateY(-1px);
 }
 
-.search-bar input::placeholder {
+.search-bars input::placeholder {
   color: #999;
 }
 
-.search-icon {
+.search-icons {
   position: absolute;
-  right: 1.25rem;
+  right: 30px;
   top: 50%;
   transform: translateY(-50%);
   color: #667eea;
@@ -90,7 +91,7 @@
   transition: color 0.3s ease;
 }
 
-.search-icon:hover {
+.search-icons:hover {
   color: #764ba2;
 }
 
@@ -157,7 +158,39 @@
   background: #f0f0f0;
   border-color: #667eea;
 }
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-dropdown {
+  position: absolute;
+  top: calc(100% - 20px);
+  right: 0;
+  width: 200px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideDown 0.3s ease;
+  border: 1px solid #e8e8e8;
+}
 
+.user-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.user-dropdown button:hover {
+  background: #ccc;
+}
 .user-icon {
   width: 35px;
   height: 35px;
@@ -171,7 +204,7 @@
 }
 
 .user-icon i {
-  color: #667eea;
+  color: black;
   font-size: 1.1rem;
 }
 
@@ -221,12 +254,11 @@
   color: #333;
 }
 
-.badge {
+.badges {
   position: absolute;
   top: -5px;
   right: -5px;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-  color: #fff;
+  color: #ee5a6f;
   font-size: 0.7rem;
   font-weight: bold;
   padding: 2px 6px;
@@ -267,7 +299,7 @@
 }
 
 .cart-dropdown::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -6px;
   right: 20px;

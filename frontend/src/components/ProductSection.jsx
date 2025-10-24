@@ -1,25 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { CartAPI, ProductAPI } from "../services/api";
+import { ProductAPI } from "../services/api";
 import { Eye, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProductSection.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart, addToCart } from "../redux/slices/cartSlice";
 
 const ProductSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const currentUser = useSelector((state) => state.auth.currentUser);
+  const cart = useSelector((state) => state.cart.items);
+
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        const res = await ProductAPI.getAll();
-        setProducts(res.products || []);
-      } catch (err) {
-        console.error("❌ Lỗi khi tải sản phẩm:", err);
+        const data = await ProductAPI.getAll();
+        setProducts(data.products || data);
+      } catch (error) {
+        console.error("❌ Lỗi khi tải sản phẩm:", error);
       } finally {
         setLoading(false);
       }
@@ -48,21 +55,19 @@ const ProductSection = () => {
     }, 3000);
   };
 
-  const addToCart = async (product, e) => {
-    e?.stopPropagation?.();
-    try {
-      const variantId = product.variants?.[0]?._id;
-      const quantity = 1;
+  const handleAddToCart = async (product, e) => {
+    e.stopPropagation();
 
-      if (currentUser && currentUser.userId) {
-        await CartAPI.addToCart(variantId, quantity);
-        window.dispatchEvent(new Event("cartUpdated"));
-        showToast("Đã thêm vào giỏ hàng!");
-      } else {
-        navigate("/login");
-      }
+    if (!currentUser || !currentUser.userId) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await dispatch(addToCart(product, 1));
+      showToast("Đã thêm vào giỏ hàng!");
     } catch (error) {
-      console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
+      console.error("❌ Thêm vào giỏ hàng thất bại:", error);
       showToast("Thêm vào giỏ hàng thất bại!");
     }
   };
@@ -96,7 +101,7 @@ const ProductSection = () => {
                 <div className="product-overlay">
                   <div className="product-actions">
                     <button
-                      className="action-btn view-btn"
+                      className="actions-btn view-btn"
                       title="Xem chi tiết"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -107,9 +112,9 @@ const ProductSection = () => {
                       <span>Xem</span>
                     </button>
                     <button
-                      className="action-btn cart-btn"
+                      className="actions-btn cart-btn"
                       title="Thêm vào giỏ"
-                      onClick={(e) => addToCart(p, e)}
+                      onClick={(e) => handleAddToCart(p, e)}
                     >
                       <ShoppingCart size={18} />
                       <span>Giỏ hàng</span>
@@ -135,10 +140,7 @@ const ProductSection = () => {
                         </span>
                         {p.variants[0].originalPrice && (
                           <span className="product-price-old">
-                            {p.variants[0].originalPrice.toLocaleString(
-                              "vi-VN"
-                            )}
-                            ₫
+                            {p.variants[0].originalPrice.toLocaleString("vi-VN")}₫
                           </span>
                         )}
                       </>

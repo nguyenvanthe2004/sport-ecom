@@ -30,7 +30,7 @@ const SidebarAdmin = () => {
           <Link to="/admin/users">👥 Customer</Link>
         </li>
         <li>
-          <Link to="/admin/orders">🛒 Orders</Link>
+          <Link to="/admin/orderAdmin">🛒 Orders</Link>
         </li>
       </ul>
     </aside>
