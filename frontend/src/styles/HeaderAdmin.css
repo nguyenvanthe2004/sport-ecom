@@ -1,5 +1,4 @@
 .header-admin {
-  background: #fff;
   border-bottom: 1px solid #e6e6e6;
   height: 60px;
   padding: 0 20px;
@@ -10,7 +9,7 @@
   top: 0;
   left: 240px; /* để tránh đè sidebar */
   right: 0;
-  z-index: 1000;
+  z-index: 2;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 

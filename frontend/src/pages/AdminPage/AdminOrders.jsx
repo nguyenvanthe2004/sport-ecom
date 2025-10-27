@@ -1,71 +1,60 @@
-// AdminOrders.jsx
 import React, { useState, useEffect } from "react";
 import "../../styles/AdminOrders.css";
-import { Eye, Trash2, Edit, Package, Search, Filter, X, Check, Clock, Truck, XCircle, CheckCircle } from "lucide-react";
+import {
+  Eye,
+  Trash2,
+  Edit,
+  Package,
+  Search,
+  Filter,
+  X,
+  Check,
+  Clock,
+  Truck,
+  XCircle,
+  CheckCircle,
+} from "lucide-react";
+import { OrderAPI } from "../../services/api";
+import LoadingPage from "../../components/LoadingPage";
 
 const AdminOrders = () => {
-  const fakeOrders = [
-    {
-      _id: "ORD001",
-      userId: { fullname: "Nguyễn Văn A" },
-      shippingAddress: "123 Nguyễn Trãi, Hà Nội",
-      totalPrice: 1500000,
-      status: "pending",
-      paymentStatus: "paid",
-      createAt: "2025-10-10T10:00:00Z",
-      orderItems: [
-        { _id: "ITEM001", variantId: { nameDetail: "Áo Polo trắng", price: 500000 }, quantity: 2 },
-        { _id: "ITEM002", variantId: { nameDetail: "Quần Jean xanh", price: 500000 }, quantity: 1 },
-      ],
-    },
-    {
-      _id: "ORD002",
-      userId: { fullname: "Trần Thị B" },
-      shippingAddress: "456 Lê Lợi, TP.HCM",
-      totalPrice: 820000,
-      status: "shipped",
-      paymentStatus: "unpaid",
-      createAt: "2025-10-09T15:30:00Z",
-      orderItems: [
-        { _id: "ITEM003", variantId: { nameDetail: "Váy hoa xanh", price: 410000 }, quantity: 2 },
-      ],
-    },
-    {
-      _id: "ORD003",
-      userId: { fullname: "Lê Văn C" },
-      shippingAddress: "789 Trần Hưng Đạo, Đà Nẵng",
-      totalPrice: 2100000,
-      status: "delivered",
-      paymentStatus: "paid",
-      createAt: "2025-10-08T09:15:00Z",
-      orderItems: [
-        { _id: "ITEM004", variantId: { nameDetail: "Áo khoác da", price: 1500000 }, quantity: 1 },
-        { _id: "ITEM005", variantId: { nameDetail: "Giày thể thao", price: 600000 }, quantity: 1 },
-      ],
-    },
-  ];
-
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [status, setStatus] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // ✅ Lấy danh sách đơn hàng
   useEffect(() => {
-    setTimeout(() => {
-      setOrders(fakeOrders);
-    }, 500);
+    const fetchOrders = async () => {
+      try {
+        const data = await OrderAPI.getAll();
+        setOrders(data);
+      } catch (error) {
+        console.error("❌ Lỗi lấy danh sách đơn hàng:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
   }, []);
 
   const getStatusIcon = (status) => {
-    switch(status) {
-      case "pending": return <Clock size={16} />;
-      case "shipped": return <Truck size={16} />;
-      case "delivered": return <CheckCircle size={16} />;
-      case "cancelled": return <XCircle size={16} />;
-      default: return <Package size={16} />;
+    switch (status) {
+      case "pending":
+        return <Clock size={16} />;
+      case "shipped":
+        return <Truck size={16} />;
+      case "delivered":
+        return <CheckCircle size={16} />;
+      case "cancelled":
+        return <XCircle size={16} />;
+      default:
+        return <Package size={16} />;
     }
   };
 
@@ -74,62 +63,100 @@ const AdminOrders = () => {
       pending: "Chờ xử lý",
       shipped: "Đang giao",
       delivered: "Đã giao",
-      cancelled: "Đã hủy"
+      cancelled: "Đã hủy",
     };
     return labels[status] || status;
   };
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.userId.fullname.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === "all" || order.status === filterStatus;
+  // ✅ Lọc đơn hàng theo tìm kiếm + trạng thái
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.userId?.fullname?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter =
+      filterStatus === "all" || order.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
+  // ✅ Xem chi tiết
   const handleView = (order) => {
     setSelectedOrder(order);
     setEditMode(false);
   };
 
+  // ✅ Bật chế độ sửa
   const handleEdit = (order) => {
     setSelectedOrder(order);
     setStatus(order.status);
+    setPaymentStatus(order.paymentStatus);
     setEditMode(true);
   };
 
-  const handleUpdate = () => {
-    setOrders(prev =>
-      prev.map(o =>
-        o._id === selectedOrder._id ? { ...o, status: status } : o
-      )
-    );
-    setEditMode(false);
-    setSelectedOrder(null);
+  // ✅ Gọi API cập nhật trạng thái
+  const handleUpdate = async () => {
+    try {
+      await OrderAPI.updateStatus(selectedOrder._id, { status, paymentStatus });
+      showToast("Bạn đã cập nhật thành công!");
+      setEditMode(false);
+      setSelectedOrder(null);
+      const data = await OrderAPI.getAll();
+      setOrders(data);
+    } catch (error) {
+      console.error("❌ Lỗi cập nhật trạng thái:", error);
+      showToast("Cập nhật thất bại!");
+    }
   };
 
-  const handleDelete = (id) => {
+  // ✅ Gọi API xóa đơn hàng
+  const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa đơn hàng này không?")) return;
-    setOrders(prev => prev.filter(o => o._id !== id));
+    try {
+      await OrderAPI.delete(id);
+      alert("🗑️ Đã xóa đơn hàng thành công!");
+      setOrders((prev) => prev.filter((o) => o._id !== id));
+    } catch (error) {
+      console.error("❌ Lỗi khi xóa:", error);
+    }
   };
 
+  // ✅ Thống kê trạng thái
   const statusCounts = {
     all: orders.length,
-    pending: orders.filter(o => o.status === "pending").length,
-    shipped: orders.filter(o => o.status === "shipped").length,
-    delivered: orders.filter(o => o.status === "delivered").length,
-    cancelled: orders.filter(o => o.status === "cancelled").length,
+    pending: orders.filter((o) => o.status === "pending").length,
+    shipped: orders.filter((o) => o.status === "shipped").length,
+    delivered: orders.filter((o) => o.status === "delivered").length,
+    cancelled: orders.filter((o) => o.status === "cancelled").length,
+  };
+  const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.className = "toast-notification";
+    toast.innerHTML = `
+      <div class="toast-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <span class="toast-message">${message}</span>
+    `;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 100);
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   };
 
+  if (loading) return <LoadingPage />;
   return (
     <div className="admin-orders-page">
       <div className="admin-orders-container">
         {/* Header */}
         <div className="page-header">
           <h1 className="page-title">
-            <Package size={32} />
-            Quản lý đơn hàng
+            <Package size={32} /> Quản lý đơn hàng
           </h1>
-          <p className="page-subtitle">Theo dõi và quản lý tất cả đơn hàng của bạn</p>
+          <p className="page-subtitle">Theo dõi và quản lý tất cả đơn hàng</p>
         </div>
 
         {/* Stats Cards */}
@@ -140,11 +167,13 @@ const AdminOrders = () => {
             { key: "shipped", label: "Đang giao", color: "purple" },
             { key: "delivered", label: "Đã giao", color: "green" },
             { key: "cancelled", label: "Đã hủy", color: "red" },
-          ].map(stat => (
-            <div 
+          ].map((stat) => (
+            <div
               key={stat.key}
               onClick={() => setFilterStatus(stat.key)}
-              className={`stat-card ${filterStatus === stat.key ? 'active' : ''}`}
+              className={`stat-card ${
+                filterStatus === stat.key ? "active" : ""
+              }`}
             >
               <div className="stat-content">
                 <div>
@@ -158,8 +187,7 @@ const AdminOrders = () => {
             </div>
           ))}
         </div>
-
-        {/* Search & Filter Bar */}
+        {/* Search Bar */}
         <div className="search-bar">
           <div className="search-wrapper">
             <div className="search-input-wrapper">
@@ -172,12 +200,11 @@ const AdminOrders = () => {
                 className="search-input"
               />
             </div>
-            <button 
+            <button
               onClick={() => setShowFilters(!showFilters)}
               className="filter-button"
             >
-              <Filter size={20} />
-              Bộ lọc
+              <Filter size={20} /> Bộ lọc
             </button>
           </div>
         </div>
@@ -200,59 +227,65 @@ const AdminOrders = () => {
                     <th>Tổng tiền</th>
                     <th>Trạng thái</th>
                     <th>Thanh toán</th>
-                    <th>Ngày tạo</th>
                     <th>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredOrders.map(order => (
+                  {filteredOrders.map((order) => (
                     <tr key={order._id}>
                       <td>
                         <span className="order-id">{order._id}</span>
                       </td>
                       <td>
-                        <span className="customer-name">{order.userId.fullname}</span>
+                        <span className="customer-name">
+                          {order.userId?.fullname || "—"}
+                        </span>
                       </td>
                       <td>
                         <span className="address">{order.shippingAddress}</span>
                       </td>
                       <td>
                         <span className="total-price">
-                          {order.totalPrice.toLocaleString("vi-VN")}₫
+                          {order.totalPrice?.toLocaleString("vi-VN")}₫
                         </span>
                       </td>
                       <td>
                         <span className={`status-badge status-${order.status}`}>
-                          {getStatusIcon(order.status)}
+                          {getStatusIcon(order.status)}{" "}
                           {getStatusLabel(order.status)}
                         </span>
                       </td>
                       <td>
-                        <span className={`payment-badge payment-${order.paymentStatus}`}>
-                          {order.paymentStatus === "paid" ? <Check size={14} /> : <X size={14} />}
-                          {order.paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
+                        <span
+                          className={`payment-badge payment-${order.paymentStatus}`}
+                        >
+                          {order.paymentStatus === "paid" ? (
+                            <Check size={14} />
+                          ) : (
+                            <X size={14} />
+                          )}
+                          {order.paymentStatus === "paid"
+                            ? "Đã thanh toán"
+                            : "Chưa thanh toán"}
                         </span>
-                      </td>
-                      <td className="date-cell">
-                        {new Date(order.createAt).toLocaleDateString("vi-VN")}
                       </td>
                       <td>
                         <div className="action-buttons">
-                          <button 
+                          <button
                             onClick={() => handleView(order)}
                             className="action-btn view-btn"
                             title="Xem chi tiết"
                           >
                             <Eye size={18} />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleEdit(order)}
                             className="action-btn edit-btn"
                             title="Sửa trạng thái"
                           >
                             <Edit size={18} />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDelete(order._id)}
                             className="action-btn delete-btn"
                             title="Xóa"
@@ -269,108 +302,18 @@ const AdminOrders = () => {
           )}
         </div>
 
-        {/* View Modal */}
-        {selectedOrder && !editMode && (
-          <div className="modal-overlay">
-            <div className="modal-dialog modal-view">
-              <div className="modal-header">
-                <h3>Chi tiết đơn hàng</h3>
-                <button 
-                  onClick={() => setSelectedOrder(null)}
-                  className="close-btn"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              
-              <div className="modal-body">
-                <div className="order-details-grid">
-                  <div className="detail-section">
-                    <div className="detail-item">
-                      <p className="detail-label">Mã đơn hàng</p>
-                      <p className="detail-value">{selectedOrder._id}</p>
-                    </div>
-                    <div className="detail-item">
-                      <p className="detail-label">Khách hàng</p>
-                      <p className="detail-value">{selectedOrder.userId.fullname}</p>
-                    </div>
-                    <div className="detail-item">
-                      <p className="detail-label">Địa chỉ giao hàng</p>
-                      <p className="detail-value">{selectedOrder.shippingAddress}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="detail-section">
-                    <div className="detail-item">
-                      <p className="detail-label">Trạng thái đơn hàng</p>
-                      <span className={`status-badge status-${selectedOrder.status}`}>
-                        {getStatusIcon(selectedOrder.status)}
-                        {getStatusLabel(selectedOrder.status)}
-                      </span>
-                    </div>
-                    <div className="detail-item">
-                      <p className="detail-label">Thanh toán</p>
-                      <span className={`payment-badge payment-${selectedOrder.paymentStatus}`}>
-                        {selectedOrder.paymentStatus === "paid" ? <Check size={14} /> : <X size={14} />}
-                        {selectedOrder.paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
-                      </span>
-                    </div>
-                    <div className="detail-item">
-                      <p className="detail-label">Tổng tiền</p>
-                      <p className="total-price-large">
-                        {selectedOrder.totalPrice.toLocaleString("vi-VN")}₫
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="order-items-section">
-                  <h4>Sản phẩm đã đặt</h4>
-                  <div className="order-items-list">
-                    {selectedOrder.orderItems.map(item => (
-                      <div key={item._id} className="order-item">
-                        <div className="item-info">
-                          <p className="item-name">{item.variantId.nameDetail}</p>
-                          <p className="item-quantity">Số lượng: {item.quantity}</p>
-                        </div>
-                        <div className="item-price">
-                          <p className="price-label">Đơn giá</p>
-                          <p className="price-value">
-                            {item.variantId.price.toLocaleString("vi-VN")}₫
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button 
-                  onClick={() => setSelectedOrder(null)}
-                  className="btn btn-primary"
-                >
-                  Đóng
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Modal */}
+        {/* ✅ Modal chỉnh sửa */}
         {editMode && selectedOrder && (
           <div className="modal-overlay">
             <div className="modal-dialog modal-edit">
               <div className="modal-header">
-                <h3>Cập nhật trạng thái</h3>
+                <h3>Cập nhật trạng thái đơn hàng</h3>
               </div>
-              
+
               <div className="modal-body">
-                <label className="form-label">
-                  Chọn trạng thái mới
-                </label>
-                <select 
-                  value={status} 
+                <label className="form-label">Trạng thái đơn hàng</label>
+                <select
+                  value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className="form-select"
                 >
@@ -379,20 +322,28 @@ const AdminOrders = () => {
                   <option value="delivered">Đã giao</option>
                   <option value="cancelled">Đã hủy</option>
                 </select>
+
+                <label className="form-label">Trạng thái thanh toán</label>
+                <select
+                  value={paymentStatus}
+                  onChange={(e) => setPaymentStatus(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="unpaid">Chưa thanh toán</option>
+                  <option value="paid">Đã thanh toán</option>
+                  <option value="pending">Đang xử lý</option>
+                </select>
               </div>
 
               <div className="modal-footer">
-                <button 
+                <button
                   onClick={() => setEditMode(false)}
                   className="btn btn-secondary"
                 >
                   Hủy
                 </button>
-                <button 
-                  onClick={handleUpdate}
-                  className="btn btn-primary"
-                >
-                  Xác nhận
+                <button onClick={handleUpdate} className="btn btn-primary">
+                  Lưu thay đổi
                 </button>
               </div>
             </div>

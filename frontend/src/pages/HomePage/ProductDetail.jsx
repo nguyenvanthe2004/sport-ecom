@@ -124,8 +124,38 @@ const ProductDetail = () => {
   };
 
   const buyNow = () => {
-    navigate("/checkout", {});
+    if (!currentUser || !currentUser.userId) {
+      navigate("/login");
+      return;
+    }
+
+    if (!currentVariant) {
+      showToast("Vui lòng chọn màu và kích cỡ!");
+      return;
+    }
+
+    const buyNowItem = {
+      _id: currentVariant._id,
+      productId: {
+        _id: product._id,
+        name: product.name,
+      },
+      variantId: {
+        _id: currentVariant._id,
+        nameDetail: currentVariant.nameDetail,
+        price: currentVariant.price,
+        image: currentVariant.image,
+      },
+      quantity,
+    };
+    console.log(buyNowItem);
+    navigate("/checkout", {
+      state: {
+        buyNowItem,
+      },
+    });
   };
+
   if (loading) return <LoadingPage />;
   if (!product)
     return (
@@ -292,7 +322,10 @@ const ProductDetail = () => {
 
           {/* Nút hành động */}
           <div className="product-actions">
-            <button className="btn-add-cart" onClick={(e) => handleAddToCart(product, e)}>
+            <button
+              className="btn-add-cart"
+              onClick={(e) => handleAddToCart(product, e)}
+            >
               <ShoppingCart size={20} />
               <span>Thêm vào giỏ</span>
             </button>
