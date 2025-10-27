@@ -15,54 +15,42 @@ import Footer from "../../components/Footer";
 import { OrderAPI, CartAPI } from "../../services/api";
 import LoadingPage from "../../components/LoadingPage";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-
-const provinces = [
-  { id: 1, name: "Hà Nội" },
-  { id: 2, name: "TP. Hồ Chí Minh" },
-  { id: 3, name: "Đà Nẵng" },
-  { id: 4, name: "Cần Thơ" },
-  { id: 5, name: "Hải Phòng" },
-];
-
-const districts = {
-  1: ["Ba Đình", "Cầu Giấy", "Hoàn Kiếm", "Thanh Xuân"],
-  2: ["Quận 1", "Quận 3", "Bình Thạnh", "Tân Bình"],
-  3: ["Hải Châu", "Thanh Khê", "Sơn Trà"],
-  4: ["Ninh Kiều", "Bình Thủy"],
-  5: ["Hồng Bàng", "Ngô Quyền", "Lê Chân"],
-};
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState(
     "Thanh toán khi nhận hàng"
   );
-  const [province, setProvince] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
   const [address, setAddress] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [cartItems, setCartItems] = useState([]);
-
+  const location = useLocation();
   const navigate = useNavigate();
   const checkoutItems = useSelector((state) => state.cart.items);
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const data = await CartAPI.getMyCart();
-        setCartItems(data.items || []);
+        if (location.state?.buyNowItem) {
+          setCartItems([location.state.buyNowItem]);
+        } else if (checkoutItems?.length > 0) {
+          setCartItems(checkoutItems);
+        } else {
+          const data = await CartAPI.getMyCart();
+          setCartItems(data.items || []);
+        }
       } catch (error) {
         console.error("❌ Lỗi khi lấy giỏ hàng:", error);
       }
     };
-    fetchCart();
-  }, []);
 
-  const totalPrice = checkoutItems.reduce(
+    fetchCart();
+  }, [location.state, checkoutItems]);
+
+  const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.variantId?.price || 0) * (item.quantity || 1),
     0
   );
@@ -70,53 +58,59 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!province || !district || !address) {
-      alert("Vui lòng nhập đầy đủ địa chỉ nhận hàng!");
+    if (!address.trim()) {
+      alert("Vui lòng nhập địa chỉ nhận hàng!");
       return;
     }
 
-    if (checkoutItems.length === 0) {
+    if (cartItems.length === 0) {
       alert("Giỏ hàng của bạn đang trống!");
       return;
     }
 
-    const shippingAddress = {
-      province: provinces.find((p) => p.id === Number(province))?.name,
-      district,
-      ward,
-      address,
-    };
-
-    const orderItems = checkoutItems.map((item) => ({
+    const orderItems = cartItems.map((item) => ({
       variantId: item.variantId?._id || item.variantId,
       quantity: item.quantity,
     }));
 
     const orderData = {
       orderItems,
-      shippingAddress: JSON.stringify({
-        province: provinces.find((p) => p.id === Number(province))?.name,
-        district,
-        ward,
-        address,
-      }),
+      shippingAddress: address,
       paymentMethod,
     };
 
     try {
       setLoading(true);
       const response = await OrderAPI.create(orderData);
-      console.log("📤 Dữ liệu gửi đi:", orderData);
-      console.log("✅ Phản hồi từ server:", response);
-      alert("Đặt hàng thành công!");
+      showToast("Bạn đã đặt hàng thành công!");
       await CartAPI.clearCart();
       navigate("/orders");
     } catch (error) {
       console.error("❌ Lỗi khi tạo đơn hàng:", error);
-      alert("Đặt hàng thất bại. Vui lòng thử lại!");
+      showToast("Lỗi khi đặt hàng!");
     } finally {
       setLoading(false);
     }
+  };
+
+  const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.className = "toast-notification";
+    toast.innerHTML = `
+      <div class="toast-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+<span class="toast-message">${message}</span>
+    `;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 100);
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   };
 
   if (loading) return <LoadingPage />;
@@ -132,7 +126,6 @@ const Checkout = () => {
             {/* Cột trái - Form thông tin */}
             <div className="checkout-form-section">
               <form onSubmit={handleSubmit}>
-                {/* Thông tin khách hàng */}
                 <div className="info-section">
                   <h2 className="section-title">
                     <User size={20} />
@@ -172,56 +165,15 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                {/* Địa chỉ giao hàng */}
                 <div className="address-section">
                   <h2 className="section-title">
                     <MapPin size={20} />
                     Địa chỉ giao hàng
                   </h2>
                   <div className="form-grid">
-                    <select
-                      value={province}
-                      onChange={(e) => {
-                        setProvince(e.target.value);
-                        setDistrict("");
-                      }}
-                      required
-                    >
-                      <option value="">Chọn Tỉnh/Thành phố</option>
-                      {provinces.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name}
-                        </option>
-                      ))}
-                    </select>
-
-                    <select
-                      value={district}
-                      onChange={(e) => setDistrict(e.target.value)}
-                      required
-                      disabled={!province}
-                    >
-                      <option value="">Chọn Quận/Huyện</option>
-                      {province &&
-                        districts[province]?.map((d, i) => (
-                          <option key={i} value={d}>
-                            {d}
-                          </option>
-                        ))}
-                    </select>
-
                     <input
                       type="text"
-                      placeholder="Phường/Xã"
-                      value={ward}
-                      onChange={(e) => setWard(e.target.value)}
-                      required
-                      className="full-width"
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Số nhà, tên đường..."
+                      placeholder="Nhập địa chỉ nhận hàng (VD: 123 Nguyễn Huệ, Quận 1, TP. HCM)"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       required
@@ -229,8 +181,6 @@ const Checkout = () => {
                     />
                   </div>
                 </div>
-
-                {/* Phương thức thanh toán */}
                 <div className="payment-section">
                   <h2 className="section-title">Phương thức thanh toán</h2>
                   <div className="payment-options">
@@ -300,7 +250,7 @@ const Checkout = () => {
                 Đơn hàng của bạn
               </h2>
 
-              {checkoutItems.length === 0 ? (
+              {cartItems.length === 0 ? (
                 <div className="empty-cart">
                   <Package size={48} />
                   <p>Không có sản phẩm nào</p>
@@ -308,12 +258,15 @@ const Checkout = () => {
               ) : (
                 <>
                   <div className="checkout-list">
-                    {checkoutItems.map((item) => (
-                      <div key={item._id} className="checkout-item">
+                    {cartItems.map((item) => (
+                      <div
+                        key={item._id || item.variantId?._id}
+                        className="checkout-item"
+                      >
                         <div className="checkout-image">
                           <img
                             src={`http://localhost:8000${item.variantId?.image}`}
-                            alt={item.variantId?.productId?.name}
+                            alt={item.variantId?.productId?.name || "Sản phẩm"}
                           />
                         </div>
                         <div className="checkout-details">
