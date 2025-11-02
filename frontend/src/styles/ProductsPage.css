@@ -10,214 +10,136 @@
   background: #fafbfc;
 }
 
-/* ============================================
-   SIDEBAR - ADVANCED FILTER SECTION
-   ============================================ */
-
+/* Sidebar Container */
 .sidebar {
-  width: 320px;
-  flex-shrink: 0;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-  padding: 0;
-  height: calc(100vh - 135px);
-  position: sticky;
-  top: 135px;
-  overflow-y: auto;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.03);
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 100px;
 }
 
-.sidebar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: #f9fafb;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #ff6b00 0%, #ff8c42 100%);
-  border-radius: 4px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #ff5500 0%, #ff7b32 100%);
-}
-
-/* Sidebar Header */
+/* Section Titles */
 .sidebar h3 {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
-  padding: 24px 28px 16px;
-  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-  border-bottom: 2px solid #f3f4f6;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-}
-
-.sidebar h3::before {
-  content: "";
-  width: 4px;
-  height: 20px;
-  background: linear-gradient(180deg, #ff6b00 0%, #ff8c42 100%);
-  border-radius: 2px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f5f5f5;
+  letter-spacing: -0.2px;
 }
 
 .sidebar h3:not(:first-child) {
-  margin-top: 0;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 28px;
 }
 
-/* Filter Group */
+/* List */
 .sidebar ul {
   list-style: none;
-  padding: 20px 28px 32px;
+  padding: 0;
   margin: 0;
-  background: #ffffff;
 }
 
 .sidebar li {
   margin-bottom: 4px;
 }
 
+/* Labels */
 .sidebar label {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 14px;
-  color: #4b5563;
+  padding: 10px 12px;
   cursor: pointer;
-  padding: 12px 16px;
-  border-radius: 10px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: #4a4a4a;
+  font-weight: 400;
   position: relative;
-  overflow: hidden;
-}
-
-.sidebar label::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 0;
-  background: linear-gradient(90deg, #fff5ed 0%, transparent 100%);
-  transition: width 0.3s ease;
-  z-index: -1;
-}
-
-.sidebar label:hover::before {
-  width: 100%;
 }
 
 .sidebar label:hover {
-  color: #ff6b00;
-  transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(255, 107, 0, 0.1);
+  background: #f8f9fa;
+  color: #1a1a1a;
 }
 
-/* Custom Radio Buttons */
+/* Custom Radio Button */
 .sidebar input[type="radio"] {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #d1d5db;
-  border-radius: 50%;
+  width: 17px;
+  height: 17px;
   cursor: pointer;
-  position: relative;
-  transition: all 0.3s ease;
+  accent-color: #2563eb;
   flex-shrink: 0;
 }
 
-.sidebar input[type="radio"]::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff6b00 0%, #ff8c42 100%);
-  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.sidebar input[type="radio"]:checked {
-  border-color: #ff6b00;
-  background: #fff5ed;
-}
-
-.sidebar input[type="radio"]:checked::before {
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.sidebar input[type="radio"]:checked + span {
-  color: #ff6b00;
-  font-weight: 700;
+/* Checked Label Style */
+.sidebar label:has(input:checked) {
+  color: #1a1a1a;
+  font-weight: 500;
+  background: #f0f7ff;
 }
 
 /* Clear Button */
-.clear-btn {
-  width: calc(100% - 56px);
-  margin: 0 28px 24px;
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border: 2px solid #fca5a5;
-  border-radius: 10px;
-  color: #dc2626;
-  font-size: 13px;
-  font-weight: 700;
+.sidebar .clear-btn {
+  width: 100%;
+  padding: 10px 16px;
+  margin-top: 12px;
+  background: #fff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 8px;
+  color: #737373;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
-.clear-btn::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 0;
-  height: 0;
-  background: rgba(220, 38, 38, 0.1);
-  border-radius: 50%;
-  transition: width 0.6s ease, height 0.6s ease;
+.sidebar .clear-btn:hover {
+  background: #fafafa;
+  border-color: #d4d4d4;
+  color: #404040;
 }
 
-.clear-btn:hover::before {
-  width: 300px;
-  height: 300px;
+.sidebar .clear-btn:active {
+  transform: translateY(1px);
 }
 
-.clear-btn:hover {
-  background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%);
-  border-color: #dc2626;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    margin-bottom: 24px;
+  }
 }
 
-.clear-btn:active {
-  transform: translateY(0);
+@media (max-width: 768px) {
+  .sidebar {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .sidebar h3 {
+    font-size: 15px;
+    margin-bottom: 14px;
+  }
+
+  .sidebar label {
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+
+  .sidebar input[type="radio"] {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sidebar .clear-btn {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
 }
-.productList{
+.productList {
   margin-top: 100px;
-    width: 100%;
+  width: 100%;
 }
-
-
-
