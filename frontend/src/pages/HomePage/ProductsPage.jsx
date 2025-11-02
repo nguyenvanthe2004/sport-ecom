@@ -1,109 +1,92 @@
 import React, { useEffect, useState } from "react";
-import { CartAPI, CategoryAPI, ProductAPI } from "../../services/api"; // import API của bạn
+import { CartAPI, CategoryAPI, ProductAPI } from "../../services/api";
 import "../../styles/ProductsPage.css";
-import { ShoppingCart, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { useSelector } from "react-redux";
-import ProductSection from "../../components/ProductSection";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../redux/slices/cartSlice";
+import ProductFilterSection from "../../components/ProductFilterSection";
+import { showToast } from "../../../libs/utils";
 
 const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCat, setSelectedCat] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [priceFilter, setPriceFilter] = useState("");
-
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 
+  // ✅ Lấy danh mục sản phẩm
   useEffect(() => {
-    const fetchData = async () => {
-      const catRes = await CategoryAPI.getAll();
-      const prodRes = await ProductAPI.getAll();
-      setCategories(catRes.categories || catRes);
-      setProducts(prodRes.products || prodRes);
-      setFiltered(prodRes.products || prodRes);
+    const fetchCategories = async () => {
+      try {
+        const catRes = await CategoryAPI.getAll();
+        setCategories(catRes.categories || catRes);
+      } catch (error) {
+        console.error("❌ Lỗi khi tải danh mục:", error);
+      }
     };
-    fetchData();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
-    let data = [...products];
-    if (selectedCat)
-      data = data.filter((p) => p.category?.name === selectedCat);
+    const fetchFiltered = async () => {
+      try {
+        const params = {};
 
-    if (priceFilter) {
-      switch (priceFilter) {
-        case "under500":
-          data = data.filter((p) => p.variants?.[0]?.price < 500000);
-          break;
-        case "500to1000":
-          data = data.filter(
-            (p) =>
-              p.variants?.[0]?.price >= 500000 &&
-              p.variants?.[0]?.price < 1000000
+        if (selectedCat) {
+          const selectedCategory = categories.find(
+            (c) => c.name === selectedCat
           );
-          break;
-        case "1000to2000":
-          data = data.filter(
-            (p) =>
-              p.variants?.[0]?.price >= 1000000 &&
-              p.variants?.[0]?.price < 2000000
-          );
-          break;
-        case "over2000":
-          data = data.filter((p) => p.variants?.[0]?.price >= 2000000);
-          break;
-        default:
-          break;
+          if (selectedCategory) params.categoryId = selectedCategory._id;
+        }
+
+        switch (priceFilter) {
+          case "under500":
+            params.maxPrice = 500000;
+            break;
+          case "500to1000":
+            params.minPrice = 500000;
+            params.maxPrice = 1000000;
+            break;
+          case "1000to2000":
+            params.minPrice = 1000000;
+            params.maxPrice = 2000000;
+            break;
+          case "over2000":
+            params.minPrice = 2000000;
+            break;
+        }
+
+        const res = await ProductAPI.getFiltered(params);
+        setProducts(res.products || []);
+      } catch (error) {
+        console.error("❌ Lỗi khi lọc sản phẩm:", error);
       }
+    };
+
+    fetchFiltered();
+  }, [selectedCat, priceFilter, categories]);
+
+  const handleAddToCart = async (product, e) => {
+    e.stopPropagation();
+
+    if (!currentUser || !currentUser.userId) {
+      navigate("/login");
+      return;
     }
 
-    setFiltered(data);
-  }, [selectedCat, priceFilter, products]);
-  const addToCart = async (product, e) => {
-    e?.stopPropagation?.();
     try {
-      const variantId = product.variants?.[0]?._id;
-      const quantity = 1;
-
-      if (currentUser && currentUser.userId) {
-        await CartAPI.addToCart(variantId, quantity);
-        window.dispatchEvent(new Event("cartUpdated"));
-        showToast("Đã thêm vào giỏ hàng!");
-      } else {
-        navigate("/login");
-      }
+      dispatch(addToCart(product, 1));
+      showToast("Đã thêm vào giỏ hàng!");
     } catch (error) {
-      console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
+      console.error("❌ Thêm vào giỏ hàng thất bại:", error);
       showToast("Thêm vào giỏ hàng thất bại!");
     }
   };
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
 
-    setTimeout(() => {
-      toast.classList.add("show");
-    }, 100);
-
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
   return (
     <>
       <Header />
@@ -194,12 +177,15 @@ const ProductsPage = () => {
 
         {/* Danh sách sản phẩm */}
         <div className="productList">
-          <ProductSection />
+          <ProductFilterSection
+            products={products}
+            addToCart={handleAddToCart}
+          />
         </div>
       </div>
       <Footer />
     </>
   );
-}
+};
 
 export default ProductsPage;

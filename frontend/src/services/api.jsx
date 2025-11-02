@@ -8,7 +8,6 @@ const API_URL_CATEGORY = "http://localhost:8000/category";
 const API_URL_CART = "http://localhost:8000/cart";
 const API_URL_ORDER = "http://localhost:8000/order";
 
-
 export const login = async (email, password) => {
   console.log("Logging in with:", email, password);
   const response = await axios.post(
@@ -65,6 +64,21 @@ export const ProductAPI = {
   getAll: async () => {
     const res = await axios.get(`${API_URL_PRODUCT}/getAll`);
     return res.data;
+  },
+  getFiltered: async (params) => {
+    const res = await axios.get(`${API_URL_PRODUCT}/filter`, { params });
+    return res.data;
+  },
+  search: async (keyword) => {
+    try {
+      const res = await axios.get(`${API_URL_PRODUCT}/search`, {
+        params: { q: keyword },
+      });
+      return res.data;
+    } catch (error) {
+      console.error("❌ Lỗi khi tìm kiếm sản phẩm:", error);
+      throw error;
+    }
   },
 
   create: async (productData) => {

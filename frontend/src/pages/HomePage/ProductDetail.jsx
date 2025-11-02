@@ -30,7 +30,6 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
-  const cart = useSelector((state) => state.cart.items);
 
   useEffect(() => {
     const fetchData = async () => {
