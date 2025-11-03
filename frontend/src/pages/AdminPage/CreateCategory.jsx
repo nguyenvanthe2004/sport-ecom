@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../../styles/CreateCategory.css";
 import { useSelector } from "react-redux";
 import { CategoryAPI } from "../../services/api";
+import { showToast } from "../../../libs/utils";
 
 const CreateCategory = () => {
   const currentUser = useSelector((state) => state.auth.currentUser); 
@@ -36,7 +37,7 @@ const CreateCategory = () => {
       };
 
       const res = await CategoryAPI.create(payload);
-      alert("✅ Tạo danh mục thành công!");
+      showToast("Tạo danh mục thành công!");
       console.log("Response:", res);
 
       setCategory({ name: "", description: "" });

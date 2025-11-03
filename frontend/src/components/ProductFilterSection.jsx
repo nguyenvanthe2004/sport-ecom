@@ -2,6 +2,7 @@ import React from "react";
 import { Eye, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProductSection.css";
+import { BASE_URL } from "../constants";
 
 const ProductFilterSection = ({ products = [], addToCart }) => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const ProductFilterSection = ({ products = [], addToCart }) => {
                 <img
                   src={
                     p.variants?.[0]?.image
-                      ? `http://localhost:8000/${p.variants[0].image}`
+                      ? `${BASE_URL}${p.variants[0].image}`
                       : "/no-image.jpg"
                   }
                   alt={p.name}

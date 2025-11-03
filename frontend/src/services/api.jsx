@@ -1,12 +1,13 @@
 import axios from "axios";
+import { BASE_URL } from "../constants";
 
-const API_URL_USER = "http://localhost:8000/user";
-const API_URL_UPLOAD = "http://localhost:8000/upload";
-const API_URL_PRODUCT = "http://localhost:8000/product";
-const API_URL_BRAND = "http://localhost:8000/brand";
-const API_URL_CATEGORY = "http://localhost:8000/category";
-const API_URL_CART = "http://localhost:8000/cart";
-const API_URL_ORDER = "http://localhost:8000/order";
+const API_URL_USER = `${BASE_URL}/user`;
+const API_URL_UPLOAD = `${BASE_URL}/upload`;
+const API_URL_PRODUCT = `${BASE_URL}/product`;
+const API_URL_BRAND = `${BASE_URL}/brand`;
+const API_URL_CATEGORY = `${BASE_URL}/category`;
+const API_URL_CART = `${BASE_URL}/cart`;
+const API_URL_ORDER = `${BASE_URL}/order`;
 
 export const login = async (email, password) => {
   console.log("Logging in with:", email, password);
@@ -26,13 +27,25 @@ export const register = async (email, password, fullname) => {
   });
   return response.data;
 };
-
+export const getAllUsers = async () => {
+  const response = await axios.get(`${API_URL_USER}/getAll`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
 export const getCurrentUser = async () => {
   const response = await axios.get(`${API_URL_USER}/current`, {
     withCredentials: true,
   });
   return response.data;
 };
+export const removeUser = async () => {
+  const response = await axios.delete(`${API_URL_USER}/remove`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
 
 export const UploadAPI = {
   uploadSingle: async (file) => {
@@ -72,15 +85,14 @@ export const ProductAPI = {
   search: async (keyword) => {
     try {
       const res = await axios.get(`${API_URL_PRODUCT}/search`, {
-        params: { q: keyword },
+        params: { q: keyword }, 
       });
-      return res.data;
+      return res.data; 
     } catch (error) {
       console.error("❌ Lỗi khi tìm kiếm sản phẩm:", error);
       throw error;
     }
   },
-
   create: async (productData) => {
     const res = await axios.post(`${API_URL_PRODUCT}/create`, productData, {
       withCredentials: true,
@@ -182,15 +194,12 @@ export const CartAPI = {
   },
 };
 export const OrderAPI = {
-  // Lấy tất cả đơn hàng của user hiện tại
   getMyOrders: async () => {
     const res = await axios.get(`${API_URL_ORDER}/myOrders`, {
       withCredentials: true,
     });
     return res.data;
   },
-
-  // Lấy tất cả đơn hàng (cho admin)
   getAll: async () => {
     const res = await axios.get(`${API_URL_ORDER}/getAll`, {
       withCredentials: true,
@@ -198,7 +207,6 @@ export const OrderAPI = {
     return res.data;
   },
 
-  // Lấy chi tiết đơn hàng theo ID
   getById: async (orderId) => {
     const res = await axios.get(`${API_URL_ORDER}/${orderId}`, {
       withCredentials: true,
@@ -211,16 +219,12 @@ export const OrderAPI = {
     });
     return res.data;
   },
-
-  // Cập nhật trạng thái đơn hàng
   updateStatus: async (orderId, data) => {
     const res = await axios.put(`${API_URL_ORDER}/update/${orderId}`, data, {
       withCredentials: true,
     });
     return res.data;
   },
-
-  // Xóa đơn hàng
   delete: async (orderId) => {
     const res = await axios.delete(`${API_URL_ORDER}/delete/${orderId}`, {
       withCredentials: true,

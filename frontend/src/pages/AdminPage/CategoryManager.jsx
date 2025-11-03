@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CategoryAPI } from "../../services/api"; // import API của bạn
 import "../../styles/CategoryManager.css";
+import { showToast } from "../../../libs/utils";
+import LoadingPage from "../../components/LoadingPage";
+import { FolderOpen } from "lucide-react";
 
 const CategoryManager = () => {
   const [categories, setCategories] = useState([]);
@@ -33,16 +36,18 @@ const CategoryManager = () => {
 
     try {
       await CategoryAPI.delete(id);
+      showToast("Đã xóa danh mục!");
       setCategories(categories.filter((c) => c._id !== id));
     } catch (err) {
       alert(err.message || "Xóa danh mục thất bại");
     }
   };
 
+  if(loading) return <LoadingPage />;
   return (
     <div className="category-manager container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold">Quản lý danh mục</h2>
+        <h2 className="fw-bold"><FolderOpen size={30}/>      Quản lý danh mục</h2>
         <Link to="/admin/categories/create" className="btn btn-primary">
           + Thêm danh mục
         </Link>

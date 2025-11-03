@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, removeFromCart } from "../redux/slices/cartSlice";
 import { clearCurrentUser } from "../redux/slices/currentUser";
 import { ProductAPI } from "../services/api";
+import { BASE_URL } from "../constants";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -133,7 +134,10 @@ const Header = () => {
                 }}
               >
                 <img
-                  src={`http://localhost:8000/${product.variants?.[0]?.image}`}
+                  src={`${BASE_URL}${
+                    product.variants?.[0]?.image
+                  }`}
+                  alt={product.name}
                 />
                 <span>{product.name}</span>
               </div>
@@ -188,7 +192,7 @@ const Header = () => {
                       {cart.map((item) => (
                         <div key={item._id} className="cart-dropdown-item">
                           <img
-                            src={`http://localhost:8000${item.variantId?.image}`}
+                            src={`${BASE_URL}${item.variantId?.image}`}
                             alt={item.variantId?.productId?.name}
                           />
                           <div className="item-info">

@@ -10,10 +10,14 @@
 
 /* Tiêu đề và nút thêm */
 .container h2 {
-  font-size: 24px;
+   font-size: 2rem;
   font-weight: 700;
   color: #222;
    margin-top: 20px
+}
+.container h2 svg {
+  color: #2563eb;
+  flex-shrink: 0;
 }
 
 .btn-primary {

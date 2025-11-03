@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { UploadAPI, ProductAPI, BrandAPI, CategoryAPI } from "../../services/api";
 import "../../styles/CreateProduct.css"; // style dùng chung
+import { showToast } from "../../../libs/utils";
 
 const UpdateProduct = () => {
   const { id } = useParams();
@@ -125,7 +126,7 @@ const UpdateProduct = () => {
 
       await ProductAPI.update(id, payload);
 
-      alert("✅ Cập nhật sản phẩm thành công");
+      showToast("Cập nhật sản phẩm thành công");
       navigate("/admin/products");
     } catch (err) {
       console.error("❌ Lỗi cập nhật:", err);

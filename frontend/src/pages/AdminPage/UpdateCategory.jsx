@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CategoryAPI } from "../../services/api";
+import { showToast } from "../../../libs/utils";
 
 const UpdateCategory = () => {
   const { id } = useParams(); // Lấy id từ URL
@@ -49,7 +50,7 @@ const UpdateCategory = () => {
     setError("");
     try {
       await CategoryAPI.update(id, category);
-      alert("Cập nhật danh mục thành công");
+      showToast("Cập nhật danh mục thành công");
       navigate("/admin/categories"); // quay về trang manager
     } catch (err) {
       setError(err.message || "Cập nhật thất bại");

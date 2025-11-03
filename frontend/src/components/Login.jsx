@@ -21,7 +21,6 @@ const Login = () => {
 
         try {
             const response = await login(email, password);
-            console.log("==========response", response)
             dispatch(setCurrentUser(response.user))
             if(response.user.role === 'admin'){
                 navigate('/admin');
@@ -62,7 +61,9 @@ const Login = () => {
                         minLength={5}
                     />
                 </div>
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className="error-message">
+                <p>Tài Khoản và Mật khẩu không hợp lệ!</p>    
+                </div>}
                 <button type="submit" className="login-btn" disabled={!email || !password}>
                     Đăng nhập
                 </button>

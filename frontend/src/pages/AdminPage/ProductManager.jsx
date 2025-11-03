@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProductAPI } from "../../services/api";
 import "../../styles/ProductManager.css";
+import { showToast } from "../../../libs/utils";
+import LoadingPage from "../../components/LoadingPage";
+import { Package } from "lucide-react";
+import { BASE_URL } from "../../constants";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -33,10 +37,10 @@ const ProductManagement = () => {
       try {
         await ProductAPI.delete(id);
         setProducts(products.filter((p) => p._id !== id));
-        alert("✅ Đã xóa sản phẩm!");
+        showToast("Đã xóa sản phẩm!");
       } catch (err) {
         console.error("❌ Lỗi xóa sản phẩm:", err);
-        alert("Không thể xóa sản phẩm!");
+        showToast("Không thể xóa sản phẩm!");
       }
     }
   };
@@ -46,11 +50,13 @@ const ProductManagement = () => {
     setExpandedProductId((prev) => (prev === productId ? null : productId));
   };
 
+  if(loading) return <LoadingPage />;
+
   return (
     <div className="container mt-4">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold">Quản lý sản phẩm</h2>
+        <h2 className="fw-bold"><Package size={32} />    Quản lý sản phẩm</h2>
         <Link to="/admin/products/create" className="btn btn-primary">
           + Thêm sản phẩm
         </Link>
@@ -87,7 +93,7 @@ const ProductManagement = () => {
                     <td>
                       {p.variants?.[0]?.image ? (
                         <img
-                          src={`http://localhost:8000/${p.variants[0].image}`}
+                          src={`${BASE_URL}${p.variants[0].image}`}
                           alt={p.name}
                           width="55"
                           height="55"
@@ -150,7 +156,7 @@ const ProductManagement = () => {
                                 >
                                   <div className="card border-0 shadow-sm">
                                     <img
-                                      src={`http://localhost:8000/${v.image}`}
+                                      src={`${BASE_URL}${v.image}`}
                                       alt={v.nameDetail || "variant"}
                                       className="card-img-top rounded-top"
                                       height="120"

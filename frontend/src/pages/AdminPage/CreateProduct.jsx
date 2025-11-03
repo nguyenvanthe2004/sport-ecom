@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { UploadAPI, ProductAPI, BrandAPI, CategoryAPI } from "../../services/api";
 import "../../styles/CreateProduct.css";
+import { showToast } from "../../../libs/utils";
 
 const CreateProduct = () => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -108,7 +109,7 @@ const CreateProduct = () => {
       const token = currentUser?.token || "";
       const res = await ProductAPI.create(payload, token);
 
-      alert("✅ Tạo sản phẩm thành công!");
+      showToast("Tạo sản phẩm thành công!");
       console.log("📦 Product created:", res);
 
       // Reset form

@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import "../styles/ProductSection.css";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, addToCart } from "../redux/slices/cartSlice";
+import { showToast } from "../../libs/utils";
+import { BASE_URL } from "../constants";
 
 const ProductSection = () => {
   const [products, setProducts] = useState([]);
@@ -34,26 +36,6 @@ const ProductSection = () => {
     fetchProducts();
   }, []);
 
-  // ✅ Toast thông báo đơn giản
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
 
   const handleAddToCart = async (product, e) => {
     e.stopPropagation();
@@ -91,7 +73,7 @@ const ProductSection = () => {
                 <img
                   src={
                     p.variants?.[0]?.image
-                      ? `http://localhost:8000/${p.variants[0].image}`
+                      ? `${BASE_URL}${p.variants[0].image}`
                       : "/no-image.jpg"
                   }
                   alt={p.name}

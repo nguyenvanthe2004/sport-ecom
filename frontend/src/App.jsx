@@ -23,6 +23,8 @@ import Checkout from "./pages/HomePage/Checkout";
 import LoadingPage from "./components/LoadingPage";
 import OrderPage from "./pages/HomePage/OrderPage";
 import AdminOrders from "./pages/AdminPage/AdminOrders";
+import UserManager from "./pages/AdminPage/UserManager";
+import DashboardPage from "./pages/AdminPage/DashboardPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -73,6 +75,7 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="dashboard" element={<DashboardPage/>} />{" "}
           <Route path="products">
             <Route index element={<ProductManagement />} />{" "}
             
@@ -87,6 +90,7 @@ function App() {
             <Route path="edit/:id" element={<UpdateCategory />} />{" "}
             
           </Route>
+          <Route path="users" element={<UserManager />} />{" "}
           <Route path="orderAdmin" element={<AdminOrders />} />{" "}
         </Route>
       </Routes>

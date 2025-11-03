@@ -4,6 +4,7 @@ import Footer from "../../components/Footer";
 import "../../styles/OrderPage.css";
 import LoadingPage from "../../components/LoadingPage";
 import { OrderAPI } from "../../services/api";
+import { BASE_URL } from "../../constants";
 
 const OrderPage = () => {
   const [orders, setOrders] = useState([]);
@@ -71,7 +72,7 @@ const OrderPage = () => {
                         <img
                           src={
                             item.variantId?.image
-                              ? `http://localhost:8000/${item.variantId.image}`
+                              ? `${BASE_URL}${item.variantId.image}`
                               : "/no-image.png"
                           }
                           alt={item.variantId?.name || "Sản phẩm"}

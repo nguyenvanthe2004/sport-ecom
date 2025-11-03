@@ -16,6 +16,9 @@ import Footer from "../../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingPage from "../../components/LoadingPage";
 import { addToCart, fetchCart } from "../../redux/slices/cartSlice";
+import { showToast } from "../../../libs/utils";
+import { BASE_URL } from "../../constants";
+
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -42,7 +45,7 @@ const ProductDetail = () => {
 
         if (p?.variants?.length > 0) {
           const defaultVariant = p.variants[0];
-          setMainImage(`http://localhost:8000/${defaultVariant.image}`);
+          setMainImage(`${BASE_URL}${defaultVariant.image}`);
 
           const [firstColor, firstSize] = defaultVariant.nameDetail.split("-");
           setSelectedColor(firstColor?.trim() || "");
@@ -80,30 +83,10 @@ const ProductDetail = () => {
       });
       setCurrentVariant(found || null);
       if (found) {
-        setMainImage(`http://localhost:8000/${found.image}`);
+        setMainImage(`${BASE_URL}${found.image}`);
       }
     }
   }, [selectedColor, selectedSize, product]);
-
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
 
   const handleAddToCart = async (e) => {
     e?.stopPropagation?.();
@@ -197,14 +180,14 @@ const ProductDetail = () => {
             {product.variants?.map((v, i) => (
               <img
                 key={i}
-                src={`http://localhost:8000/${v.image}`}
+                src={`${BASE_URL}${v.image}`}
                 alt={`variant-${i}`}
                 className={
-                  mainImage === `http://localhost:8000/${v.image}`
+                  mainImage === `${BASE_URL}${v.image}`
                     ? "thumbnail active"
                     : "thumbnail"
                 }
-                onClick={() => setMainImage(`http://localhost:8000/${v.image}`)}
+                onClick={() => setMainImage(`${BASE_URL}${v.image}`)}
               />
             ))}
           </div>
@@ -382,7 +365,7 @@ const ProductDetail = () => {
                   <img
                     src={
                       p.variants?.[0]?.image
-                        ? `http://localhost:8000/${p.variants[0].image}`
+                        ? `${BASE_URL}${p.variants[0].image}`
                         : "/no-image.jpg"
                     }
                     alt={p.name}
