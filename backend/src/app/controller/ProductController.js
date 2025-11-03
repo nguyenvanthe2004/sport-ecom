@@ -12,13 +12,13 @@ class ProductController {
       const totalProducts = await Product.countDocuments();
 
       const products = await Product.find()
-        .populate("brandId", "name") 
-        .populate("categoryId", "name") 
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
         .populate({
-          path: "variants", 
-          select: "nameDetail price stock image", 
+          path: "variants",
+          select: "nameDetail price stock image",
         })
-        .sort({ createAt: -1 }) 
+        .sort({ createAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean();
@@ -35,6 +35,117 @@ class ProductController {
     } catch (error) {
       console.error("Error in getAllProducts:", error);
       res.status(500).json({ message: error.message });
+    }
+  }
+  async searchProducts(req, res) {
+    try {
+      const { q, categoryId, brandId, minPrice, maxPrice } = req.query;
+
+      if (!q && !categoryId && !brandId && !minPrice && !maxPrice) {
+        return res
+          .status(400)
+          .json({ message: "Vui lòng nhập từ khóa hoặc bộ lọc" });
+      }
+
+      const productFilter = {};
+
+      if (categoryId) productFilter.categoryId = categoryId;
+
+      if (brandId) productFilter.brandId = brandId;
+
+      if (q) {
+        productFilter.name = { $regex: q, $options: "i" };
+      }
+
+      let products = await Product.find(productFilter)
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
+        .populate({
+          path: "variants",
+          select: "nameDetail price stock image",
+        })
+        .sort({ createAt: -1 })
+        .lean();
+      if (products.length === 0 && q) {
+        const variantMatches = await Variant.find({
+          nameDetail: { $regex: q, $options: "i" },
+        }).lean();
+
+        if (variantMatches.length > 0) {
+          const productIds = variantMatches.map((v) => v.productId);
+          products = await Product.find({ _id: { $in: productIds } })
+            .populate("brandId", "name")
+            .populate("categoryId", "name")
+            .populate({
+              path: "variants",
+              select: "nameDetail price stock image",
+            })
+            .sort({ createAt: -1 })
+            .lean();
+        }
+      }
+      if (minPrice || maxPrice) {
+        products = products.filter((p) => {
+          const matchedVariants = p.variants.filter((v) => {
+            if (minPrice && v.price < minPrice) return false;
+            if (maxPrice && v.price > maxPrice) return false;
+            return true;
+          });
+          return matchedVariants.length > 0;
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        total: products.length,
+        products,
+      });
+    } catch (error) {
+      console.error("❌ Lỗi khi tìm kiếm sản phẩm:", error);
+      res.status(500).json({ message: "Lỗi server khi tìm kiếm sản phẩm" });
+    }
+  }
+
+  async getFilteredProducts(req, res) {
+    try {
+      const { categoryId, brandId, minPrice, maxPrice } = req.query;
+
+      const filter = {};
+
+      if (categoryId) filter.categoryId = categoryId;
+
+      if (brandId) filter.brandId = brandId;
+
+      const products = await Product.find(filter)
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
+        .populate({
+          path: "variants",
+          select: "nameDetail price stock image",
+        })
+        .lean();
+
+      let filteredProducts = products;
+      if (minPrice || maxPrice) {
+        const min = parseFloat(minPrice) || 0;
+        const max = parseFloat(maxPrice) || Infinity;
+
+        filteredProducts = products.filter((product) => {
+          const validVariants = product.variants.filter(
+            (v) => v.price >= min && v.price <= max
+          );
+          return validVariants.length > 0;
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        total: filteredProducts.length,
+        products: filteredProducts,
+      });
+    } catch (error) {
+      console.error("❌ Lỗi khi lọc sản phẩm:", error);
+      res.status(500).json({ message: "Lỗi server khi lọc sản phẩm" });
     }
   }
   async getProductBySlug(req, res) {
@@ -105,7 +216,7 @@ class ProductController {
       // Tạo slug tự động, đảm bảo unique bằng timestamp
       const slug =
         req.body.slug || slugify(name, { lower: true, strict: true });
-const newProduct = new Product({
+      const newProduct = new Product({
         userId,
         name,
         description,
@@ -193,8 +304,8 @@ const newProduct = new Product({
           });
           await newVariant.save();
           await Product.findByIdAndUpdate(savedProduct._id, {
-          $push: { variants: savedVariant._id },
-        });
+            $push: { variants: savedVariant._id },
+          });
         }
       }
 
@@ -207,7 +318,7 @@ const newProduct = new Product({
         product: {
           userId: updatedProduct.userId,
           productId: updatedProduct._id,
-name: updatedProduct.name,
+          name: updatedProduct.name,
           description: updatedProduct.description,
           brandId: updatedProduct.brandId,
           categoryId: updatedProduct.categoryId,
