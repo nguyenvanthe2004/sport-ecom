@@ -114,8 +114,57 @@ class UserController {
   async current(req, res) {
     try {
       res.json({
-        user: req.user
+        user: req.user,
       });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+  async editUser(req, res) {
+    try {
+      const { email, fullname } = req.body;
+      const userId = req.user.userId;
+      const updatedUser = await Users.findByIdAndUpdate(
+        userId,
+        { email, fullname },
+        { new: true }
+      );
+      res.json({
+        message: "User updated successfully",
+        user: {
+          userId: updatedUser._id,
+          email: updatedUser.email,
+          fullname: updatedUser.fullname,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+  async changePassword(req, res) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const userId = req.user.userId;
+      const user = await Users.findById(userId);
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Old password is incorrect!" });
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+      user.password = hashedPassword;
+      await user.save();
+
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+  async removeUser(req, res) {
+    try {
+      const userId = req.user.userId;
+      await Users.findByIdAndDelete(userId);
+      res.json({ message: "User removed successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
