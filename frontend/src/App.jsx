@@ -20,7 +20,9 @@ import Checkout from "./pages/HomePage/Checkout";
 import LoadingPage from "./components/LoadingPage";
 import OrderPage from "./pages/HomePage/OrderPage";
 import AdminOrders from "./pages/AdminPage/AdminOrders";
-import ProfilePage from "./pages/HomePage/Profile";
+import ProfilePage from "./pages/HomePage/ProfilePage";
+import UserManager from "./pages/AdminPage/UserManager";
+import DashboardPage from "./pages/AdminPage/DashboardPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -94,6 +96,8 @@ function App() {
             <Route path="edit/:id" element={<UpdateCategory />} />{" "}
           </Route>
           <Route path="orderAdmin" element={<AdminOrders />} />{" "}
+          <Route path="users" element={<UserManager />} />{" "}
+          <Route path="dashboard" element={<DashboardPage />} />{" "}
         </Route>
       </Routes>
     </BrowserRouter>
