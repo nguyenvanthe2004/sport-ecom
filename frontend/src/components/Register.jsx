@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { register } from '../services/api';
 import '../styles/Register.css';
+import { showToast } from '../../libs/utils';
 
 const Register = () => {
     const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const Register = () => {
         try{
             const response = await register(email, password, fullname);
             console.log(response);
-            alert('Registration successful! Please log in.');
+            showToast('Đăng ký thành công!');
             
         } catch (error) {
             setError(error.message);

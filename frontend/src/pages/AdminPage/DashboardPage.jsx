@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  getAllUsers,
-  ProductAPI,
-  OrderAPI,
-  CategoryAPI,
-  BrandAPI,
-} from "../../services/api";
+import { DashboardAPI } from "../../services/api";
 import {
   Users,
   Package,
@@ -18,6 +12,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import "../../styles/DashboardPage.css";
+import LoadingPage from "../../components/LoadingPage";
 
 const DashboardPage = () => {
   const [stats, setStats] = useState({
@@ -27,28 +22,32 @@ const DashboardPage = () => {
     categories: 0,
     brands: 0,
   });
+  const [chartData, setChartData] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [revenueToday, setRevenueToday] = useState({todayRevenue: 0});
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
-      const [userRes, productRes, orderRes, categoryRes, brandRes] =
-        await Promise.all([
-          getAllUsers(),
-          ProductAPI.getAll(),
-          OrderAPI.getAll(),
-          CategoryAPI.getAll(),
-          BrandAPI.getAll(),
-        ]);
+      const [statsRes, chartRes, activitiesRes, revenueRes] = await Promise.all([
+        DashboardAPI.getStats(),
+        DashboardAPI.getRevenueChart(),
+        DashboardAPI.getRecentActivities(),
+        DashboardAPI.fetchTodayRevenue(),
+      ]);
+      setRevenueToday(revenueRes);      
+      setStats(statsRes);
 
-      setStats({
-        users: userRes.users?.length || userRes.length || 0,
-        products: productRes.products?.length || productRes.length || 0,
-        orders: orderRes.orders?.length || orderRes.length || 0,
-        categories: categoryRes.categories?.length || categoryRes.length || 0,
-        brands: brandRes.brands?.length || brandRes.length || 0,
-      });
+      // 🔥 Chuẩn hóa dữ liệu biểu đồ
+      const formattedChart = chartRes.map((item) => ({
+        month: item.month || `T${item._id}`,
+        value: item.value || item.totalRevenue || 0,
+      }));
+
+      setChartData(formattedChart);
+      setActivities(activitiesRes);
     } catch (err) {
-      console.error("Lỗi khi lấy dữ liệu dashboard:", err);
+      console.error("❌ Lỗi khi lấy dữ liệu dashboard:", err);
     } finally {
       setLoading(false);
     }
@@ -101,65 +100,17 @@ const DashboardPage = () => {
     },
   ];
 
-  const chartData = [
-    { month: "T7", value: 65 },
-    { month: "T8", value: 78 },
-    { month: "T9", value: 82 },
-    { month: "T10", value: 90 },
-    { month: "T11", value: 85 },
-    { month: "T12", value: 95 },
-  ];
-
-  const activities = [
-    {
-      action: "Đơn hàng mới",
-      detail: "#ORD-1234",
-      time: "5 phút trước",
-      color: "green",
-    },
-    {
-      action: "Sản phẩm cập nhật",
-      detail: "iPhone 15 Pro",
-      time: "12 phút trước",
-      color: "blue",
-    },
-    {
-      action: "Người dùng mới",
-      detail: "Nguyễn Văn A",
-      time: "23 phút trước",
-      color: "purple",
-    },
-    {
-      action: "Đơn hàng hoàn thành",
-      detail: "#ORD-1230",
-      time: "1 giờ trước",
-      color: "green",
-    },
-    {
-      action: "Đánh giá mới",
-      detail: "5 sao",
-      time: "2 giờ trước",
-      color: "orange",
-    },
-  ];
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-content">
-          <div className="spinner"></div>
-          <p className="loading-text">Đang tải dữ liệu...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <LoadingPage />
+  
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-wrapper">
         {/* Header */}
         <div className="dashboard-header">
-          <h2><LayoutDashboard size={32}/>  Dashboard</h2>
+          <h2>
+            <LayoutDashboard size={32} /> Dashboard
+          </h2>
           <p>Tổng quan hệ thống quản trị</p>
         </div>
 
@@ -170,16 +121,10 @@ const DashboardPage = () => {
               <div className="stat-card-content">
                 <div className="stat-info">
                   <p className="stat-title">{stat.title}</p>
-                  <h3 className="stat-value">
-                    {stat.value.toLocaleString()}
-                  </h3>
+                  <h3 className="stat-value">{stat.value?.toLocaleString()}</h3>
                   <div
                     className={`stat-trend ${
-                      stat.isUp === null
-                        ? "neutral"
-                        : stat.isUp
-                        ? "up"
-                        : "down"
+                      stat.isUp === null ? "neutral" : stat.isUp ? "up" : "down"
                     }`}
                   >
                     {stat.isUp !== null && (
@@ -216,20 +161,29 @@ const DashboardPage = () => {
                 <span>+24.5%</span>
               </div>
             </div>
+
             <div className="bar-chart">
-              {chartData.map((item, i) => (
-                <div key={i} className="bar-item">
-                  <div className="bar-wrapper">
-                    <div
-                      className="bar-fill"
-                      style={{ height: `${item.value * 2.5}px` }}
-                    >
-                      <div className="bar-value">{item.value}M</div>
+              {chartData.length > 0 ? (
+                chartData.map((item, i) => (
+                  <div key={i} className="bar-item">
+                    <div className="bar-wrapper">
+                      <div
+                        className="bar-fill"
+                        style={{
+                          height: `${Math.max(item.value *0.03)}px`,
+                        }}
+                      >
+                        <div className="bar-value">
+                          {item.value.toLocaleString()}₫
+                        </div>
+                      </div>
                     </div>
+                    <span className="bar-label">{item.month}</span>
                   </div>
-                  <span className="bar-label">{item.month}</span>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="no-data">Không có dữ liệu doanh thu</p>
+              )}
             </div>
           </div>
 
@@ -239,16 +193,20 @@ const DashboardPage = () => {
               <h3>Hoạt động gần đây</h3>
             </div>
             <div className="activity-list">
-              {activities.map((activity, i) => (
-                <div key={i} className="activity-item">
-                  <div className={`activity-dot ${activity.color}`}></div>
-                  <div className="activity-content">
-                    <p className="activity-action">{activity.action}</p>
-                    <p className="activity-detail">{activity.detail}</p>
-                    <p className="activity-time">{activity.time}</p>
+              {activities.length > 0 ? (
+                activities.map((activity, i) => (
+                  <div key={i} className="activity-item">
+                    <div className={`activity-dot ${activity.color}`}></div>
+                    <div className="activity-content">
+                      <p className="activity-action">{activity.action}</p>
+                      <p className="activity-detail">{activity.detail}</p>
+                      <p className="activity-time">{activity.time}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="no-data">Chưa có hoạt động nào gần đây</p>
+              )}
             </div>
           </div>
         </div>
@@ -260,7 +218,7 @@ const DashboardPage = () => {
               <h4>Doanh thu hôm nay</h4>
               <TrendingUp size={24} />
             </div>
-            <p className="quick-stat-value">12.5M ₫</p>
+            <p className="quick-stat-value">{revenueToday.todayRevenue.toLocaleString()}đ</p>
             <p className="quick-stat-description">+15.3% so với hôm qua</p>
           </div>
 
@@ -269,7 +227,7 @@ const DashboardPage = () => {
               <h4>Đơn hàng mới</h4>
               <ShoppingCart size={24} />
             </div>
-            <p className="quick-stat-value">28</p>
+            <p className="quick-stat-value">{stats.orders}</p>
             <p className="quick-stat-description">Cần xử lý</p>
           </div>
 

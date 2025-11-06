@@ -8,6 +8,7 @@ const API_URL_BRAND = `${BASE_URL}/brand`;
 const API_URL_CATEGORY = `${BASE_URL}/category`;
 const API_URL_CART = `${BASE_URL}/cart`;
 const API_URL_ORDER = `${BASE_URL}/order`;
+const API_URL_DASHBOARD = `${BASE_URL}/dashboard`;
 
 export const login = async (email, password) => {
   console.log("Logging in with:", email, password);
@@ -246,4 +247,36 @@ export const OrderAPI = {
     });
     return res.data;
   },
+};
+
+export const DashboardAPI = {
+  getStats: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/stats`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  // 💰 Lấy dữ liệu doanh thu theo tháng (biểu đồ)
+  getRevenueChart: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/chart`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  // 🕓 Lấy hoạt động gần đây (recent activities)
+  getRecentActivities: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/activities`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  fetchTodayRevenue: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/today-revenue`, {
+      withCredentials: true,
+    });
+    return res.data;
+  }
 };

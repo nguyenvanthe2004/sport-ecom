@@ -5,6 +5,7 @@ import { login } from '../services/api';
 import '../styles/Login.css';
 import {  useDispatch } from 'react-redux';
 import { setCurrentUser } from '../redux/slices/currentUser';
+import { showToast } from '../../libs/utils';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,9 +22,10 @@ const Login = () => {
 
         try {
             const response = await login(email, password);
+            showToast("Đăng nhâp thành công!")
             dispatch(setCurrentUser(response.user))
             if(response.user.role === 'admin'){
-                navigate('/admin');
+                navigate('/admin/dashboard');
             } else if (response.user.role === 'user'){
                 navigate('/home');
             } else {

@@ -50,13 +50,19 @@ const ProductManagement = () => {
     setExpandedProductId((prev) => (prev === productId ? null : productId));
   };
 
-  if(loading) return <LoadingPage />;
+  if (loading) return <LoadingPage />;
 
   return (
     <div className="container mt-4">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold"><Package size={32} />    Quản lý sản phẩm</h2>
+        <div>
+          <h2 className="fw-bold">
+            <Package size={32} /> Quản lý sản phẩm
+          </h2>
+          <p className="page-subtitle">Theo dõi và quản lý tất cả sản phẩm</p>
+        </div>
+
         <Link to="/admin/products/create" className="btn btn-primary">
           + Thêm sản phẩm
         </Link>

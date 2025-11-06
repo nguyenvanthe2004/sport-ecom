@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { UploadAPI, ProductAPI, BrandAPI, CategoryAPI } from "../../services/api";
 import "../../styles/CreateProduct.css"; // style dùng chung
 import { showToast } from "../../../libs/utils";
+import { BASE_URL } from "../../constants";
 
 const UpdateProduct = () => {
   const { id } = useParams();
@@ -50,7 +51,8 @@ const UpdateProduct = () => {
         setVariants(
           p.variants.map((v) => ({
             ...v,
-            imageFile: null, // để upload nếu user chọn
+            image: `${BASE_URL}${v.image}`
+             // để upload nếu user chọn
           }))
         );
       } catch (err) {
@@ -80,13 +82,6 @@ const UpdateProduct = () => {
     }
 
     setVariants(newVariants);
-  };
-
-  const addVariant = () => {
-    setVariants([
-      ...variants,
-      { nameDetail: "", price: "", stock: "", image: "", imageFile: null },
-    ]);
   };
 
   const removeVariant = (index) => {
@@ -281,14 +276,6 @@ const UpdateProduct = () => {
             </div>
           </div>
         ))}
-
-        <button
-          type="button"
-          className="btn btn-outline-primary mb-3"
-          onClick={addVariant}
-        >
-          + Thêm biến thể
-        </button>
 
         <div className="text-end">
           <button type="submit" className="btn btn-success" disabled={loading}>

@@ -43,11 +43,17 @@ const CategoryManager = () => {
     }
   };
 
-  if(loading) return <LoadingPage />;
+  if (loading) return <LoadingPage />;
   return (
     <div className="category-manager container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold"><FolderOpen size={30}/>      Quản lý danh mục</h2>
+        <div>
+          <h2 className="fw-bold">
+            <FolderOpen size={30} /> Quản lý danh mục
+          </h2>
+          <p className="page-subtitle">Theo dõi và quản lý tất cả danh mục</p>
+        </div>
+
         <Link to="/admin/categories/create" className="btn btn-primary">
           + Thêm danh mục
         </Link>

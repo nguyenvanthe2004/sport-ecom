@@ -11,7 +11,7 @@ const SidebarAdmin = () => {
     <aside className="sidebar-admin">
       <div className="sidebar-top">
         <img
-          src="/public/easports.jpg"
+          src="/public/avatar.avif"
           alt="avatar"
           className="avatar"
         />

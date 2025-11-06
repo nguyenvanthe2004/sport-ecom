@@ -289,7 +289,6 @@ class ProductController {
       if (typeof variants === "string") variants = JSON.parse(variants);
       variants = variants || [];
 
-      // Cập nhật hoặc thêm mới
       for (const variant of variants) {
         if (variant.id) {
           await Variant.findByIdAndUpdate(variant.id, {
@@ -303,8 +302,8 @@ class ProductController {
             image: variant.image,
           });
           await newVariant.save();
-          await Product.findByIdAndUpdate(savedProduct._id, {
-            $push: { variants: savedVariant._id },
+          await Product.findByIdAndUpdate(updatedProduct._id, {
+            $push: { variants: updatedProduct._id },
           });
         }
       }
