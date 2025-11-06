@@ -27,6 +27,22 @@ export const register = async (email, password, fullname) => {
   });
   return response.data;
 };
+export const editUser = async (email, fullname) => {
+  const response = await axios.put(
+    `${API_URL_USER}/edit`,
+    { email, fullname },
+    { withCredentials: true }
+  );
+  return response.data;
+};
+export const changePassword = async (currentPassword, newPassword) => {
+  const response = await axios.put(
+    `${API_URL_USER}/changePassword`,
+    { oldPassword: currentPassword, newPassword },
+    { withCredentials: true }
+  );
+  return response.data;
+};
 export const getAllUsers = async () => {
   const response = await axios.get(`${API_URL_USER}/getAll`, {
     withCredentials: true,
@@ -45,7 +61,6 @@ export const removeUser = async () => {
   });
   return response.data;
 };
-
 
 export const UploadAPI = {
   uploadSingle: async (file) => {
@@ -85,9 +100,9 @@ export const ProductAPI = {
   search: async (keyword) => {
     try {
       const res = await axios.get(`${API_URL_PRODUCT}/search`, {
-        params: { q: keyword }, 
+        params: { q: keyword },
       });
-      return res.data; 
+      return res.data;
     } catch (error) {
       console.error("❌ Lỗi khi tìm kiếm sản phẩm:", error);
       throw error;
