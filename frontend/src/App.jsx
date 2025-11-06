@@ -1,9 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  setCurrentUser,
-  clearCurrentUser,
-} from "./redux/slices/currentUser";
+import { setCurrentUser, clearCurrentUser } from "./redux/slices/currentUser";
 import { getCurrentUser } from "./services/api";
 import AuthPage from "./pages/authPage";
 import Home from "./pages/HomePage/Home";
@@ -23,12 +20,11 @@ import Checkout from "./pages/HomePage/Checkout";
 import LoadingPage from "./components/LoadingPage";
 import OrderPage from "./pages/HomePage/OrderPage";
 import AdminOrders from "./pages/AdminPage/AdminOrders";
-import UserManager from "./pages/AdminPage/UserManager";
-import DashboardPage from "./pages/AdminPage/DashboardPage";
+import ProfilePage from "./pages/HomePage/Profile";
 
 function App() {
   const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -47,10 +43,7 @@ function App() {
     };
     fetchCurrentUser();
   }, [dispatch]);
-  if (loading)
-    return (
-      <LoadingPage />
-    );
+  if (loading) return <LoadingPage />;
 
   return (
     <BrowserRouter>
@@ -61,10 +54,25 @@ function App() {
         <Route path="/register" element={<AuthPage formType="register" />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
-        
+
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute role="user">
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/orders" element={<OrderPage />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute role="user">
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Khu vực Admin */}
         <Route
@@ -75,22 +83,16 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<DashboardPage/>} />{" "}
           <Route path="products">
             <Route index element={<ProductManagement />} />{" "}
-            
             <Route path="create" element={<CreateProduct />} />{" "}
             <Route path="edit/:id" element={<UpdateProduct />} />
-            
           </Route>
           <Route path="categories">
             <Route index element={<CategoryManager />} />{" "}
-            
             <Route path="create" element={<CreateCategory />} />{" "}
             <Route path="edit/:id" element={<UpdateCategory />} />{" "}
-            
           </Route>
-          <Route path="users" element={<UserManager />} />{" "}
           <Route path="orderAdmin" element={<AdminOrders />} />{" "}
         </Route>
       </Routes>
