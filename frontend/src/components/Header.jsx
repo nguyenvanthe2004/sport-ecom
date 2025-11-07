@@ -91,6 +91,11 @@ const Header = () => {
     setShowUserDropdown(false);
     navigate("/login");
   };
+  const handleRegister = () => {
+    dispatch(clearCurrentUser());
+    setShowUserDropdown(false);
+    navigate("/register");
+  };
 
   const handleMyOrders = () => {
     setShowUserDropdown(false);
@@ -257,10 +262,10 @@ const Header = () => {
             <i className="fa fa-user"></i>
           </div>
           <span className="username">
-            {currentUser ? currentUser.fullname : "Đăng nhập"}
+            {currentUser && currentUser.userId ? currentUser.fullname : " "}
           </span>
 
-          {currentUser
+          {currentUser && currentUser.userId
             ? showUserDropdown && (
                 <div className="user-dropdown">
                   <button onClick={handleUser}>Hồ sơ người dùng</button>
@@ -271,6 +276,7 @@ const Header = () => {
             : showUserDropdown && (
                 <div className="user-dropdown">
                   <button onClick={handleLogin}>Đăng nhập</button>
+                  <button onClick={handleRegister}>Đăng ký</button>
                 </div>
               )}
         </div>

@@ -1,0 +1,167 @@
+/* Container chính */
+.sports-news {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Tiêu đề section */
+.sports-news h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 40px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.sports-news h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b35, #f7931e);
+  border-radius: 2px;
+}
+
+/* Grid layout */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+}
+
+/* Card styling */
+.news-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.news-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Image container */
+.news-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.news-card:hover img {
+  transform: scale(1.08);
+}
+
+/* Content area */
+.news-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Tag/Category */
+.tag {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  align-self: flex-start;
+  transition: transform 0.2s ease;
+}
+
+.news-card:hover .tag {
+  transform: scale(1.05);
+}
+
+/* Title */
+.news-content h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 12px 0;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.news-card:hover h3 {
+  color: #667eea;
+}
+
+/* Description */
+.news-content p {
+  font-size: 0.95rem;
+  color: #718096;
+  line-height: 1.6;
+  margin-top: auto;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .news-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+  
+  .sports-news h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sports-news {
+    padding: 40px 15px;
+  }
+  
+  .news-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  
+  .sports-news h2 {
+    font-size: 1.75rem;
+  }
+  
+  .news-card img {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .sports-news h2 {
+    font-size: 1.5rem;
+  }
+  
+  .news-card img {
+    height: 220px;
+  }
+}

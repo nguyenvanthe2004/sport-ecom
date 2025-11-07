@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setCurrentUser, clearCurrentUser } from "./redux/slices/currentUser";
 import { getCurrentUser } from "./services/api";
-import AuthPage from "./pages/authPage";
+import AuthPage from "./pages/AuthPage";
 import Home from "./pages/HomePage/Home";
 import AdminLayout from "./pages/AdminPage/Home";
 import ProtectedRoute from "./components/ProtectedRoute";

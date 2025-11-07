@@ -7,13 +7,14 @@ import ProductSection from "../../components/ProductSection";
 import Banner from "../../components/Banner";
 import "../../styles/Home.css";
 import ContactSection from "../../components/ContactSection";
+import NewSection from "../../components/NewSection";
+import MapLocation from "../../components/MapLocation";
+import ListBrand from "../../components/ListBrand";
 
 const Home = () => {
   return (
     <div className="home-container">
       <Header />
-      
-      <CategorySection />
 
       <Slider />
 
@@ -21,7 +22,13 @@ const Home = () => {
 
       <Banner />
 
+      <MapLocation />
+
       <ContactSection />
+
+      <NewSection />
+
+      <ListBrand />
 
       <Footer />
     </div>

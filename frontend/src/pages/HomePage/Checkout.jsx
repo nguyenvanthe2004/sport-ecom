@@ -208,7 +208,7 @@ const Checkout = () => {
                     <div className="qr-section">
                       <p className="qr-title">Quét mã để thanh toán</p>
                       <img
-                        src="/public/qr_code.png"
+                        src="/public/qr_code.jpg"
                         alt="QR Code"
                         className="qr-image"
                       />
