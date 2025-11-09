@@ -11,7 +11,6 @@ const API_URL_ORDER = `${BASE_URL}/order`;
 const API_URL_DASHBOARD = `${BASE_URL}/dashboard`;
 
 export const login = async (email, password) => {
-  console.log("Logging in with:", email, password);
   const response = await axios.post(
     `${API_URL_USER}/login`,
     { email, password },
@@ -140,6 +139,26 @@ export const BrandAPI = {
     const res = await axios.get(`${API_URL_BRAND}/getAll`);
     return res.data;
   },
+  create: async (brandData) => {
+    const res = await axios.post(`${API_URL_BRAND}/create`, brandData, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  update: async (brandId, brandData) => {
+    const res = await axios.put(
+      `${API_URL_BRAND}/update/${brandId}`,
+      brandData
+    );
+    return res.data;
+  },
+
+  delete: async (brandId) => {
+    const res = await axios.delete(`${API_URL_BRAND}/delete/${brandId}`);
+    return res.data;
+  },
+
 };
 
 export const CategoryAPI = {

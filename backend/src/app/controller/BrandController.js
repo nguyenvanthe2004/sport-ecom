@@ -11,7 +11,8 @@ class BrandController {
   }
   async createBrand(req, res) {
     try {
-      const { userId, name, description } = req.body;
+      const userId = req.user.userId;
+      const { name, description } = req.body;
       if (!name) {
         return res.status(400).json({ message: "Brand name is required" });
       }

@@ -1,11 +1,8 @@
 /* Tổng thể vùng nội dung */
 .container {
-  max-width: 85%;
   background-color: #f8f9fc;
   min-height: calc(100vh - 70px);
   box-sizing: border-box;
-  margin-left: 12%;
- 
 }
 
 /* Tiêu đề và nút thêm */

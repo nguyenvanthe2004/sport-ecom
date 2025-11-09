@@ -1,15 +1,13 @@
 /* Vùng chứa chính */
 .category-manager {
-  max-width: 85%;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  margin-left: 12%;
   margin-bottom: 50px;
 }
 
 /* Tiêu đề & nút thêm */
 .category-manager h2 {
-   font-size: 2rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #333;
 }

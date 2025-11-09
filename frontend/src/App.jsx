@@ -23,6 +23,9 @@ import ProfilePage from "./pages/HomePage/ProfilePage";
 import UserManager from "./pages/AdminPage/UserManager";
 import DashboardPage from "./pages/AdminPage/DashboardPage";
 import AuthPage from "./pages/AuthPage";
+import BrandManager from "./pages/AdminPage/BrandManager";
+import CreateBrand from "./pages/AdminPage/CreateBrand";
+import UpdateBrand from "./pages/AdminPage/UpdateBrand";
 
 function App() {
   const dispatch = useDispatch();
@@ -94,6 +97,11 @@ function App() {
             <Route index element={<CategoryManager />} />{" "}
             <Route path="create" element={<CreateCategory />} />{" "}
             <Route path="edit/:id" element={<UpdateCategory />} />{" "}
+          </Route>
+          <Route path="brands">
+            <Route index element={<BrandManager />} />{" "}
+            <Route path="create" element={<CreateBrand />} />{" "}
+            <Route path="edit/:id" element={<UpdateBrand />} />{" "}
           </Route>
           <Route path="orderAdmin" element={<AdminOrders />} />{" "}
           <Route path="users" element={<UserManager />} />{" "}

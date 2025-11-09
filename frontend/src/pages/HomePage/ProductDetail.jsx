@@ -130,7 +130,6 @@ const ProductDetail = () => {
       },
       quantity,
     };
-    console.log(buyNowItem);
     navigate("/checkout", {
       state: {
         buyNowItem,
