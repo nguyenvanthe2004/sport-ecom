@@ -24,7 +24,7 @@ const CreateBrand = () => {
     e.preventDefault();
 
     if (!userId) {
-      alert("⚠️ Bạn cần đăng nhập để tạo thương hiệu!");
+      alert(" Bạn cần đăng nhập để tạo thương hiệu!");
       return;
     }
 
@@ -38,7 +38,7 @@ const CreateBrand = () => {
       };
 
       const res = await BrandAPI.create(payload);
-      showToast("✅ Tạo thương hiệu thành công!");
+      showToast(" Tạo thương hiệu thành công!");
       console.log("Response:", res);
 
       setBrand({ name: "", description: "" });
