@@ -20,8 +20,7 @@ const UpdateCategory = () => {
     setLoading(true);
     setError("");
     try {
-      const categories = await CategoryAPI.getAll(); // lấy toàn bộ category
-      const cat = categories.find((c) => c._id === id);
+      const cat = await CategoryAPI.getCategoryById(id); // lấy toàn bộ category
       if (!cat) throw new Error("Danh mục không tồn tại");
       setCategory({
         name: cat.name,

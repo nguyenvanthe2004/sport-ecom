@@ -1,6 +1,7 @@
 const Product = require("../models/Products");
 const Variant = require("../models/Variants");
 const slugify = require("slugify");
+const mongoose = require("mongoose");
 
 class ProductController {
   async getAllProducts(req, res) {
@@ -35,6 +36,26 @@ class ProductController {
     } catch (error) {
       console.error("Error in getAllProducts:", error);
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  async getProductById(req, res) {
+    try {
+      const { id } = req.params;
+      const product = await Product.findById(id)
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
+        .populate({
+          path: "variants",
+          select: "nameDetail price stock image",
+        });
+
+      if (!product) {
+        return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+      }
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ message: "Lỗi server", error });
     }
   }
   async searchProducts(req, res) {
@@ -110,44 +131,81 @@ class ProductController {
     try {
       const { categoryId, brandId, minPrice, maxPrice } = req.query;
 
-      const filter = {};
+      const matchStage = {};
+      if (categoryId)
+        matchStage.categoryId = new mongoose.Types.ObjectId(categoryId);
+      if (brandId) matchStage.brandId = new mongoose.Types.ObjectId(brandId);
 
-      if (categoryId) filter.categoryId = categoryId;
+      const min = minPrice ? parseFloat(minPrice) : 0;
+      const max = maxPrice ? parseFloat(maxPrice) : Number.MAX_SAFE_INTEGER;
 
-      if (brandId) filter.brandId = brandId;
+      const products = await Product.aggregate([
+        { $match: matchStage },
 
-      const products = await Product.find(filter)
-        .populate("brandId", "name")
-        .populate("categoryId", "name")
-        .populate({
-          path: "variants",
-          select: "nameDetail price stock image",
-        })
-        .lean();
+        {
+          $lookup: {
+            from: "variants", 
+            localField: "variants",
+            foreignField: "_id",
+            as: "variants",
+          },
+        },
+        {
+          $addFields: {
+            variants: {
+              $filter: {
+                input: "$variants",
+                as: "v",
+                cond: {
+                  $and: [
+                    { $gte: ["$$v.price", min] },
+                    { $lte: ["$$v.price", max] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        { $match: { "variants.0": { $exists: true } } },
 
-      let filteredProducts = products;
-      if (minPrice || maxPrice) {
-        const min = parseFloat(minPrice) || 0;
-        const max = parseFloat(maxPrice) || Infinity;
+        {
+          $lookup: {
+            from: "categories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brandId",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            category: { $arrayElemAt: ["$category", 0] },
+            brand: { $arrayElemAt: ["$brand", 0] },
+            variants: 1,
+          },
+        },
+      ]);
 
-        filteredProducts = products.filter((product) => {
-          const validVariants = product.variants.filter(
-            (v) => v.price >= min && v.price <= max
-          );
-          return validVariants.length > 0;
-        });
-      }
-
-      return res.status(200).json({
+      res.status(200).json({
         success: true,
-        total: filteredProducts.length,
-        products: filteredProducts,
+        total: products.length,
+        products,
       });
     } catch (error) {
       console.error("❌ Lỗi khi lọc sản phẩm:", error);
       res.status(500).json({ message: "Lỗi server khi lọc sản phẩm" });
     }
   }
+
   async getProductBySlug(req, res) {
     try {
       const { slug } = req.params;

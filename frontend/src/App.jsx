@@ -26,6 +26,7 @@ import AuthPage from "./pages/AuthPage";
 import BrandManager from "./pages/AdminPage/BrandManager";
 import CreateBrand from "./pages/AdminPage/CreateBrand";
 import UpdateBrand from "./pages/AdminPage/UpdateBrand";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const dispatch = useDispatch();
@@ -52,6 +53,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<Home />} />

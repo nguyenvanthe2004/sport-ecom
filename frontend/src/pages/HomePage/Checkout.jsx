@@ -93,7 +93,7 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   
   if (loading) return <LoadingPage />;
@@ -255,6 +255,9 @@ const Checkout = () => {
                         <div className="checkout-details">
                           <p className="checkout-name">
                             {item.variantId?.productId?.name}
+                          </p>
+                          <p className="checkout-nameDetail">
+                            {item.variantId?.nameDetail}
                           </p>
                           <p className="checkout-quantity">
                             Số lượng: {item.quantity}

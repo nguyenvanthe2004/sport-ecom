@@ -157,18 +157,17 @@ class DashboardController {
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    // Tính tổng doanh thu từ các đơn hàng hôm nay
     const result = await Order.aggregate([
       {
         $match: {
           createdAt: { $gte: startOfDay, $lte: endOfDay },
-          status: "delivered", // chỉ tính đơn hoàn thành (tuỳ bạn muốn)
+          status: "delivered", 
         },
       },
       {
         $group: {
           _id: null,
-          totalRevenue: { $sum: "$totalPrice" }, // hoặc trường khác như "amount"
+          totalRevenue: { $sum: "$totalPrice" }, 
         },
       },
     ]);

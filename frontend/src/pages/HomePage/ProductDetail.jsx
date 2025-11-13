@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CartAPI, ProductAPI } from "../../services/api";
 import {
@@ -19,7 +19,6 @@ import { addToCart, fetchCart } from "../../redux/slices/cartSlice";
 import { showToast } from "../../../libs/utils";
 import { BASE_URL } from "../../constants";
 
-
 const ProductDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -33,6 +32,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
+  const [subImages, setSubImages] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,6 +76,18 @@ const ProductDetail = () => {
   ];
 
   useEffect(() => {
+    if (!product?.variants) return;
+
+    const images = product.variants.reduce((acc, variant) => {
+      const color = variant.nameDetail.split("-")[0].trim();
+      if (!acc[color]) acc[color] = variant.image;
+      return acc;
+    }, {});
+
+    setSubImages(images);
+  }, [product]);
+
+  useEffect(() => {
     if (product && selectedColor && selectedSize) {
       const found = product.variants.find((v) => {
         const [color, size] = v.nameDetail.split("-");
@@ -97,7 +109,7 @@ const ProductDetail = () => {
     }
 
     try {
-      await dispatch(addToCart(product, 1));
+      dispatch(addToCart(currentVariant, quantity));
       showToast("Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Thêm vào giỏ hàng thất bại:", error);
@@ -118,15 +130,15 @@ const ProductDetail = () => {
 
     const buyNowItem = {
       _id: currentVariant._id,
-      productId: {
-        _id: product._id,
-        name: product.name,
-      },
       variantId: {
         _id: currentVariant._id,
         nameDetail: currentVariant.nameDetail,
         price: currentVariant.price,
         image: currentVariant.image,
+        productId: {
+          _id: product._id,
+          name: product.name,
+        },
       },
       quantity,
     };
@@ -154,7 +166,7 @@ const ProductDetail = () => {
       <Header />
 
       <div className="breadcrumb">
-        <span onClick={() => navigate("/")}>Trang chủ</span>
+        <span onClick={() => navigate("/home")}>Trang chủ</span>
         <span className="separator">/</span>
         <span onClick={() => navigate("/products")}>Sản phẩm</span>
         <span className="separator">/</span>
@@ -176,17 +188,18 @@ const ProductDetail = () => {
           </div>
 
           <div className="thumbnail-list">
-            {product.variants?.map((v, i) => (
+            {Object.entries(subImages).map(([color, image]) => (
               <img
-                key={i}
-                src={`${BASE_URL}${v.image}`}
-                alt={`variant-${i}`}
+                key={color}
+                src={`${BASE_URL}${image}`}
+                alt={color}
+                width={100}
                 className={
-                  mainImage === `${BASE_URL}${v.image}`
+                  mainImage === `${BASE_URL}${image}`
                     ? "thumbnail active"
                     : "thumbnail"
                 }
-                onClick={() => setMainImage(`${BASE_URL}${v.image}`)}
+                onClick={() => setMainImage(`${BASE_URL}${image}`)}
               />
             ))}
           </div>

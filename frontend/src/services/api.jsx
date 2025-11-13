@@ -43,8 +43,9 @@ export const changePassword = async (currentPassword, newPassword) => {
   );
   return response.data;
 };
-export const getAllUsers = async () => {
+export const getAllUsers = async (page = 1, limit = 10) => {
   const response = await axios.get(`${API_URL_USER}/getAll`, {
+    params: { page, limit },
     withCredentials: true,
   });
   return response.data;
@@ -89,11 +90,22 @@ export const UploadAPI = {
 };
 
 export const ProductAPI = {
-  getAll: async () => {
-    const res = await axios.get(`${API_URL_PRODUCT}/getAll`);
+  getAll: async (page = 1, limit = 10) => {
+    try {
+      const res = await axios.get(`${API_URL_PRODUCT}/getAll`, {
+        params: { page, limit },
+      });
+      return res.data;
+    } catch (error) {
+      console.error("❌ Lỗi khi lấy danh sách sản phẩm:", error);
+      throw error;
+    }
+  },
+  getProductById: async (id) => {
+    const res = await axios.get(`${API_URL_PRODUCT}/product/${id}`);
     return res.data;
   },
-  getFiltered: async (params) => {
+  getFiltered: async (params) => { 
     const res = await axios.get(`${API_URL_PRODUCT}/filter`, { params });
     return res.data;
   },
@@ -139,6 +151,10 @@ export const BrandAPI = {
     const res = await axios.get(`${API_URL_BRAND}/getAll`);
     return res.data;
   },
+  getBrandById: async (id) => {
+    const res = await axios.get(`${API_URL_BRAND}/brand/${id}`);
+    return res.data;
+  },
   create: async (brandData) => {
     const res = await axios.post(`${API_URL_BRAND}/create`, brandData, {
       withCredentials: true,
@@ -164,6 +180,11 @@ export const BrandAPI = {
 export const CategoryAPI = {
   getAll: async () => {
     const res = await axios.get(`${API_URL_CATEGORY}/getAll`);
+    return res.data;
+  },
+
+  getCategoryById: async (id) => {
+    const res = await axios.get(`${API_URL_CATEGORY}/category/${id}`);
     return res.data;
   },
 
@@ -229,8 +250,9 @@ export const CartAPI = {
   },
 };
 export const OrderAPI = {
-  getMyOrders: async () => {
+  getMyOrders: async (page = 1, limit = 5) => {
     const res = await axios.get(`${API_URL_ORDER}/myOrders`, {
+      params: { page, limit },
       withCredentials: true,
     });
     return res.data;

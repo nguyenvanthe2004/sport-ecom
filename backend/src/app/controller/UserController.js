@@ -8,8 +8,26 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
 class UserController {
   async getAllUsers(req, res) {
     try {
-      const users = await Users.find();
-      res.status(200).json(users);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const totalUsers = await Users.countDocuments();
+
+      const users = await Users.find()
+        .sort({ createAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      const totalPages = Math.ceil(totalUsers / limit);
+      res.status(200).json({
+      page,
+      limit,
+      totalPages,
+      totalUsers,
+      users,
+    });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

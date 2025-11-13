@@ -11,33 +11,39 @@ const ProductManagement = () => {
   const [products, setProducts] = useState([]);
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
   const navigate = useNavigate();
 
   // 🔹 Lấy danh sách sản phẩm từ API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const res = await ProductAPI.getAll();
-        setProducts(res.products || []); // đảm bảo có mảng products
-      } catch (err) {
-        console.error("❌ Lỗi lấy danh sách sản phẩm:", err);
-        alert("Không thể tải danh sách sản phẩm!");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async (page) => {
+    try {
+      setLoading(true);
+      const res = await ProductAPI.getAll(page, limit);
+      setProducts(res.products || []);
+      setTotalPages(res.totalPages || 1);
+    } catch (err) {
+      console.error("❌ Lỗi lấy danh sách sản phẩm:", err);
+      showToast("Không thể tải danh sách sản phẩm!");
+    } finally {
+      setLoading(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    fetchProducts(page);
+  }, [page]);
 
   // 🔹 Xóa sản phẩm
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) {
       try {
         await ProductAPI.delete(id);
-        setProducts(products.filter((p) => p._id !== id));
         showToast("Đã xóa sản phẩm!");
+        // Reload dữ liệu trang hiện tại
+        fetchProducts(page);
       } catch (err) {
         console.error("❌ Lỗi xóa sản phẩm:", err);
         showToast("Không thể xóa sản phẩm!");
@@ -85,17 +91,11 @@ const ProductManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="9" className="text-center py-4 text-muted">
-                  Đang tải dữ liệu...
-                </td>
-              </tr>
-            ) : products.length > 0 ? (
+            {products.length > 0 ? (
               products.map((p, index) => (
                 <React.Fragment key={p._id}>
                   <tr>
-                    <td>{index + 1}</td>
+                    <td>{(page - 1) * limit + index + 1}</td>
                     <td>
                       {p.variants?.[0]?.image ? (
                         <img
@@ -145,7 +145,7 @@ const ProductManagement = () => {
                     </td>
                   </tr>
 
-                  {/* 🔽 Hiện danh sách biến thể */}
+                  {/* Hiện danh sách biến thể */}
                   {expandedProductId === p._id && (
                     <tr>
                       <td colSpan="9">
@@ -203,6 +203,33 @@ const ProductManagement = () => {
           </tbody>
         </table>
       </div>
+
+      {/* 🔹 Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination mt-3 text-center">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            «
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              className={page === i + 1 ? "active" : ""}
+              onClick={() => setPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            »
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -29,20 +29,24 @@ export const fetchCart = () => async (dispatch) => {
   }
 };
 
-export const addToCart = (product, quantity = 1) => async (dispatch) => {
+export const addToCart = (variant, quantity = 1) => async (dispatch) => {
   try {
-    const variantId = product?.variants?.[0]?._id;
+    const variantId = variant?._id;
+
     if (!variantId) {
-      console.error("❌ Không tìm thấy variantId của sản phẩm!");
+      console.error("❌ Không tìm thấy variantId!");
       return;
     }
+
     await CartAPI.addToCart(variantId, quantity);
     const data = await CartAPI.getMyCart();
+
     dispatch(setCart(data?.cartItems || []));
   } catch (error) {
     console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
   }
 };
+
 
 
 export const removeFromCart = (cartItemId) => async (dispatch) => {

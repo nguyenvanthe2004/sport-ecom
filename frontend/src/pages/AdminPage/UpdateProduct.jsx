@@ -36,9 +36,9 @@ const UpdateProduct = () => {
         setCategories(categoryRes);
 
         // Lấy product
-        const allProducts = await ProductAPI.getAll();
-        const p = allProducts.products.find((prod) => prod._id === id);
-        if (!p) throw new Error("Không tìm thấy sản phẩm");
+        const p = await ProductAPI.getProductById(id);
+        console.log(p);
+        
         setProduct({
           name: p.name,
           description: p.description,

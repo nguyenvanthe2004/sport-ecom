@@ -19,6 +19,8 @@ const CartPage = () => {
   const currentUser = useSelector((state) => state.auth.currentUser);
 
   const isLoggedIn = currentUser.role === "user";
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const loadCart = async () => {
@@ -27,6 +29,10 @@ const CartPage = () => {
     };
     loadCart();
   }, [dispatch]);
+
+  const totalPages = Math.ceil(cart.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedItems = cart.slice(startIndex, startIndex + itemsPerPage);
 
   const updateQuantity = async (variantId, amount) => {
     const item = cart.find((i) => i._id === variantId);
@@ -97,7 +103,7 @@ const removeItem = async (id) => {
           ) : (
             <div className="cart-content">
               <div className="cart-items">
-                {cart.map((item) => (
+                {paginatedItems.map((item) => (
                   <div className="cart-item" key={item._id}>
                     <div className="item-img">
                       <img
@@ -145,6 +151,33 @@ const removeItem = async (id) => {
                     </div>
                   </div>
                 ))}
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((p) => p - 1)}
+                    >
+                      «
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(i + 1)}
+                        className={currentPage === i + 1 ? "active" : ""}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((p) => p + 1)}
+                    >
+                      »
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="cart-summary">

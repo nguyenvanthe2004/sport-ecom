@@ -30,20 +30,27 @@ const AdminOrders = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Lấy danh sách đơn hàng
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+
+  const fetchOrders = async (page) => {
+    try {
+      setLoading(true);
+      const data = await OrderAPI.getAll(page, limit);
+      setOrders(data.orders || []);
+      setTotalPages(data.totalPages || 1);
+    } catch (error) {
+      console.error("❌ Lỗi lấy danh sách đơn hàng:", error);
+    } finally {
+      setLoading(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await OrderAPI.getAll();
-        setOrders(data);
-      } catch (error) {
-        console.error("❌ Lỗi lấy danh sách đơn hàng:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+    fetchOrders(page);
+  }, [page]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -284,6 +291,29 @@ const AdminOrders = () => {
             </div>
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+              «
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                className={page === i + 1 ? "active" : ""}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              »
+            </button>
+          </div>
+        )}
 
         {/* ✅ Modal chỉnh sửa */}
         {editMode && selectedOrder && (

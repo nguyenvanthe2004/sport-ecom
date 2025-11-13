@@ -67,7 +67,10 @@ export default function ProfilePage() {
     (sum, order) => sum + (order.totalPrice || 0),
     0
   );
-  const recentOrders = orders.slice(-3).reverse();
+  const deliveredOrders = orders
+  .filter((order) => order.status === "delivered")
+  .slice(-3) 
+  .reverse();
 
   const saveProfile = async () => {
     try {
@@ -231,10 +234,10 @@ export default function ProfilePage() {
           <div className="card-header">
             <div className="card-title">
               <Package size={24} />
-              Đơn hàng gần đây
+              Đơn hàng hoàn thành
             </div>
             <div className="card-action" onClick={handleOrders}>
-              Xem tất cả
+              Xem đơn hàng
               <ChevronRight size={16} />
             </div>
           </div>
@@ -251,7 +254,7 @@ export default function ProfilePage() {
               </tr>
             </thead>
             <tbody>
-              {recentOrders.map((order, index) => (
+              {deliveredOrders.map((order, index) => (
                 <tr key={index}>
                   <td>{order._id}</td>
                   <td>

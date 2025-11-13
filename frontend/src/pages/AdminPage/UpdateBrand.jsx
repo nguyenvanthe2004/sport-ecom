@@ -19,8 +19,7 @@ const UpdateBrand = () => {
     setLoading(true);
     setError("");
     try {
-      const brands = await BrandAPI.getAll(); // lấy toàn bộ brand
-      const b = brands.find((b) => b._id === id);
+      const b = await BrandAPI.getBrandById(id); // lấy toàn bộ brand
       if (!b) throw new Error("Thương hiệu không tồn tại");
       setBrand({
         name: b.name,

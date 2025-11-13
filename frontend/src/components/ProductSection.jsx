@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ProductAPI } from "../services/api";
-import { Eye, ShoppingCart } from "lucide-react";
+import { ChevronRight, Eye, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProductSection.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,22 +36,8 @@ const ProductSection = () => {
     fetchProducts();
   }, []);
 
-
-  const handleAddToCart = async (product, e) => {
-    e.stopPropagation();
-
-    if (!currentUser || !currentUser.userId) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      await dispatch(addToCart(product, 1));
-      showToast("Đã thêm vào giỏ hàng!");
-    } catch (error) {
-      console.error("❌ Thêm vào giỏ hàng thất bại:", error);
-      showToast("Thêm vào giỏ hàng thất bại!");
-    }
+  const handleProducts = () => {
+    navigate("/products");
   };
 
   return (
@@ -96,7 +82,10 @@ const ProductSection = () => {
                     <button
                       className="actions-btn cart-btn"
                       title="Thêm vào giỏ"
-                      onClick={(e) => handleAddToCart(p, e)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/product/${p.slug}`);
+                      }}
                     >
                       <ShoppingCart size={18} />
                       <span>Giỏ hàng</span>
@@ -122,7 +111,10 @@ const ProductSection = () => {
                         </span>
                         {p.variants[0].originalPrice && (
                           <span className="product-price-old">
-                            {p.variants[0].originalPrice.toLocaleString("vi-VN")}₫
+                            {p.variants[0].originalPrice.toLocaleString(
+                              "vi-VN"
+                            )}
+                            ₫
                           </span>
                         )}
                       </>
@@ -134,6 +126,10 @@ const ProductSection = () => {
               </div>
             </div>
           ))}
+          <div className="card-action" onClick={handleProducts}>
+            Xem tất cả
+            <ChevronRight size={16} />
+          </div>
         </div>
       )}
     </section>

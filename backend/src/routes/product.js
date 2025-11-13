@@ -6,6 +6,7 @@ const { verifyUser, verifyAdmin } = require("../config/middleware/authJWT");
 
 
 router.get('/getAll', ProductController.getAllProducts);
+router.get("/product/:id", ProductController.getProductById);
 router.post('/create',verifyUser, verifyAdmin, ProductController.createProduct);
 router.get('/slug/:slug', ProductController.getProductBySlug);
 router.get("/filter", ProductController.getFilteredProducts);
