@@ -113,7 +113,7 @@ const Header = () => {
       <a href="/home" className="logo">
         <div className="logo-container">
           <div className="logo-page">
-            <img src="/public/logo.jpg" alt="Logo" />
+            <img src={`${FRONTEND_URL}logo.jpg`} alt="Logo" />
           </div>
         </div>
       </a>
