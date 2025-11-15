@@ -16,7 +16,7 @@ import Footer from "../../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingPage from "../../components/LoadingPage";
 import { addToCart, fetchCart } from "../../redux/slices/cartSlice";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 import { BASE_URL } from "../../constants";
 
 const ProductDetail = () => {
@@ -113,7 +113,7 @@ const ProductDetail = () => {
       showToast("Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Thêm vào giỏ hàng thất bại:", error);
-      showToast("Thêm vào giỏ hàng thất bại!");
+      showErrorToast("Thêm vào giỏ hàng thất bại!");
     }
   };
 
@@ -124,7 +124,7 @@ const ProductDetail = () => {
     }
 
     if (!currentVariant) {
-      showToast("Vui lòng chọn màu và kích cỡ!");
+      showErrorToast("Vui lòng chọn màu và kích cỡ!");
       return;
     }
 

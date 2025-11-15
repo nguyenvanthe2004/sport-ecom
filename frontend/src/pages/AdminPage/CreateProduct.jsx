@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { UploadAPI, ProductAPI, BrandAPI, CategoryAPI } from "../../services/api";
 import "../../styles/CreateProduct.css";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 
 const CreateProduct = () => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -117,7 +117,7 @@ const CreateProduct = () => {
       setVariants([{ nameDetail: "", price: "", stock: "", image: "", imageFile: null }]);
     } catch (err) {
       console.error("❌ Lỗi tạo sản phẩm:", err);
-      alert("❌ Có lỗi xảy ra khi tạo sản phẩm!");
+      showErrorToast("Lỗi tạo sản phẩm!")
     } finally {
       setLoading(false);
     }

@@ -5,7 +5,8 @@ import { login } from '../services/api';
 import '../styles/Login.css';
 import {  useDispatch } from 'react-redux';
 import { setCurrentUser } from '../redux/slices/currentUser';
-import { showToast } from '../../libs/utils';
+import { showErrorToast, showToast } from '../../libs/utils';
+import { FRONTEND_URL } from '../constants';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -33,13 +34,14 @@ const Login = () => {
             }
 
         } catch (error) {
+            showErrorToast("Lỗi đăng nhập!")
             setError(error.message);
         }
     }
     return (
         <div className="login-container">
             <div className="logo-img">
-                <img src="/public/logo.jpg" alt="" />
+                <img src={`${FRONTEND_URL}logo.jpg`} alt="" />
             </div>
             <form className="login-form" onSubmit={handleSubmit}>
                 <div className="form-group">

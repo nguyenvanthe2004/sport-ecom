@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../../styles/CreateCategory.css"; 
 import { useSelector } from "react-redux";
 import { BrandAPI } from "../../services/api"; 
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 
 const CreateBrand = () => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -44,7 +44,7 @@ const CreateBrand = () => {
       setBrand({ name: "", description: "" });
     } catch (error) {
       console.error("❌ Lỗi tạo thương hiệu:", error);
-      alert("❌ Không thể tạo thương hiệu!");
+      showErrorToast("Lỗi tạo thương hiệu!")
     } finally {
       setLoading(false);
     }

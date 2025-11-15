@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BrandAPI } from "../../services/api";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 
 const UpdateBrand = () => {
   const { id } = useParams(); // Lấy id từ URL
@@ -51,6 +51,7 @@ const UpdateBrand = () => {
       navigate("/admin/brands"); // quay về trang manager
     } catch (err) {
       setError(err.message || "Cập nhật thất bại");
+      showErrorToast("Lỗi cập nhật thương hiệu!")
     } finally {
       setLoading(false);
     }

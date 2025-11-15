@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProductAPI } from "../../services/api";
 import "../../styles/ProductManager.css";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 import LoadingPage from "../../components/LoadingPage";
 import { Package } from "lucide-react";
 import { BASE_URL } from "../../constants";
@@ -25,7 +25,7 @@ const ProductManagement = () => {
       setTotalPages(res.totalPages || 1);
     } catch (err) {
       console.error("❌ Lỗi lấy danh sách sản phẩm:", err);
-      showToast("Không thể tải danh sách sản phẩm!");
+      showErrorToast("Không thể tải danh sách sản phẩm!");
     } finally {
       setLoading(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -46,7 +46,7 @@ const ProductManagement = () => {
         fetchProducts(page);
       } catch (err) {
         console.error("❌ Lỗi xóa sản phẩm:", err);
-        showToast("Không thể xóa sản phẩm!");
+        showErrorToast("Không thể xóa sản phẩm!");
       }
     }
   };

@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "../styles/Slider.css"
 import { useNavigate } from "react-router-dom";
+import { FRONTEND_URL } from "../constants";
 
 const images = [
-  "/public/slider_2.avif",
-  "/public/slider_1.jpg",
-  "/public/slider_3.webp",
+  `${FRONTEND_URL}slider_2.avif`,
+  `${FRONTEND_URL}slider_1.jpg`,
+  `${FRONTEND_URL}slider_3.webp`,
 ];
+
 
 const Slider = () => {
   const [current, setCurrent] = useState(0);

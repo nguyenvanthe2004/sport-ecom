@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAllUsers, removeUser } from "../../services/api";
 import "../../styles/UserManager.css";
 import { Trash2, User } from "lucide-react";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 import LoadingPage from "../../components/LoadingPage";
 
 const UserManager = () => {
@@ -22,7 +22,7 @@ const UserManager = () => {
       setTotalPages(data.totalPages || 1);
     } catch (err) {
       console.error("Lỗi khi tải danh sách user:", err);
-      showToast("Không thể tải danh sách người dùng!");
+      showErrorToast("Không thể tải danh sách người dùng!");
     } finally {
       setLoading(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -43,7 +43,7 @@ const UserManager = () => {
       fetchUsers(page); // reload trang hiện tại
     } catch (err) {
       console.error("Lỗi khi xóa user:", err);
-      showToast("Xóa thất bại!");
+      showErrorToast("Xóa thất bại!");
     } finally {
       setDeleting(false);
     }

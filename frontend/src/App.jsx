@@ -27,6 +27,7 @@ import BrandManager from "./pages/AdminPage/BrandManager";
 import CreateBrand from "./pages/AdminPage/CreateBrand";
 import UpdateBrand from "./pages/AdminPage/UpdateBrand";
 import ScrollToTop from "./components/ScrollToTop";
+import Register from "./components/Register";
 
 function App() {
   const dispatch = useDispatch();
@@ -58,7 +59,7 @@ function App() {
         <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<AuthPage formType="login" />} />
-        <Route path="/register" element={<AuthPage formType="register" />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
 

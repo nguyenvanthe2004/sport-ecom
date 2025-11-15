@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BrandAPI } from "../../services/api"; // API Brand
 import "../../styles/CategoryManager.css"; 
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 import LoadingPage from "../../components/LoadingPage";
 import { BadgePercent } from "lucide-react";
 
@@ -39,7 +39,7 @@ const BrandManager = () => {
       showToast("Đã xóa thương hiệu!");
       setBrands(brands.filter((b) => b._id !== id));
     } catch (err) {
-      alert(err.message || "Xóa thương hiệu thất bại");
+      showErrorToast("Lỗi xóa thương hiệu!")
     }
   };
 

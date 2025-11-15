@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CategoryAPI } from "../../services/api"; // import API của bạn
 import "../../styles/CategoryManager.css";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 import LoadingPage from "../../components/LoadingPage";
 import { FolderOpen } from "lucide-react";
 
@@ -39,7 +39,7 @@ const CategoryManager = () => {
       showToast("Đã xóa danh mục!");
       setCategories(categories.filter((c) => c._id !== id));
     } catch (err) {
-      alert(err.message || "Xóa danh mục thất bại");
+      showErrorToast("Lỗi xóa danh mục!")
     }
   };
 

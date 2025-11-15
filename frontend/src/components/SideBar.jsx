@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import "../styles/SideBar.css";
 import { useSelector } from "react-redux";
+import { FRONTEND_URL } from "../constants";
 
 const SidebarAdmin = () => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -17,7 +18,7 @@ const SidebarAdmin = () => {
   return (
     <aside className="sidebar-admin">
       <div className="sidebar-top">
-        <img src="/public/avatar.avif" alt="avatar" className="avatar" />
+        <img src={`${FRONTEND_URL}avatar.avif`} alt="avatar" className="avatar" />
         <h3>{currentUser.fullname}</h3>
       </div>
 

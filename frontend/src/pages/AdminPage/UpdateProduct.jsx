@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { UploadAPI, ProductAPI, BrandAPI, CategoryAPI } from "../../services/api";
 import "../../styles/CreateProduct.css"; // style dùng chung
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 import { BASE_URL } from "../../constants";
 
 const UpdateProduct = () => {
@@ -125,7 +125,7 @@ const UpdateProduct = () => {
       navigate("/admin/products");
     } catch (err) {
       console.error("❌ Lỗi cập nhật:", err);
-      alert("❌ Cập nhật sản phẩm thất bại!");
+      showErrorToast("Lỗi cập nhật sản phẩm!")
     } finally {
       setLoading(false);
     }

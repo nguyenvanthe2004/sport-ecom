@@ -16,8 +16,8 @@ import { OrderAPI, CartAPI } from "../../services/api";
 import LoadingPage from "../../components/LoadingPage";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { showToast } from "../../../libs/utils";
-import { BASE_URL } from "../../constants";
+import { showErrorToast, showToast } from "../../../libs/utils";
+import { BASE_URL, FRONTEND_URL } from "../../constants";
 
 const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState(
@@ -89,7 +89,7 @@ const Checkout = () => {
       navigate("/orders");
     } catch (error) {
       console.error("❌ Lỗi khi tạo đơn hàng:", error);
-      showToast("Lỗi khi đặt hàng!");
+      showErrorToast("Lỗi khi đặt hàng!");
     } finally {
       setLoading(false);
     }
@@ -208,7 +208,7 @@ const Checkout = () => {
                     <div className="qr-section">
                       <p className="qr-title">Quét mã để thanh toán</p>
                       <img
-                        src="/public/qr_code.jpg"
+                        src={`${FRONTEND_URL}qr_code.jpg`}
                         alt="QR Code"
                         className="qr-image"
                       />

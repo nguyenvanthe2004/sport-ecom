@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/NewSection.css";
+import { FRONTEND_URL } from "../constants";
 
 const sportsNewsData = [
   {
@@ -9,7 +10,7 @@ const sportsNewsData = [
     description:
       "Trận cầu thảm hại giữa Manchester United để bại trận trước sân nhà Anfield của Liverpool với tỉ số 1 chiều 7-0. ",
     image:
-      "/public/news_1.jpg",
+      "news_1.jpg",
   },
   {
     id: 2,
@@ -18,7 +19,7 @@ const sportsNewsData = [
     description:
       "Trong trận đấu gần đây, vận động viên ngôi sao đã góp phần đưa đội nhà giành chiến thắng áp đảo.",
     image:
-      "/public/news_2.jpeg",
+      "news_2.jpeg",
   },
   {
     id: 3,
@@ -27,7 +28,7 @@ const sportsNewsData = [
     description:
       "Những pha chắn bóng và phòng thủ chắc chắn đã giúp đội tuyển vượt qua đối thủ mạnh để tiến vào trận đấu cuối.",
     image:
-      "/public/news_3.jpg",
+      "news_3.jpg",
   },
   {
     id: 4,
@@ -36,7 +37,7 @@ const sportsNewsData = [
     description:
       "Tay vợt trẻ đã xuất sắc vượt qua nhiều đối thủ mạnh để giành chức vô địch ấn tượng tại giải đấu năm nay.",
     image:
-      "/public/news_4.jpg",
+      "news_4.jpg",
   },
 ];
 
@@ -47,7 +48,7 @@ const SportsNews = () => {
       <div className="news-grid">
         {sportsNewsData.map((news) => (
           <div className="news-card" key={news.id}>
-            <img src={news.image} alt={news.title} />
+            <img src={`${FRONTEND_URL}${news.image}`} alt={news.title} />
             <div className="news-content">
               <span className="tag">{news.sport}</span>
               <h3>{news.title}</h3>

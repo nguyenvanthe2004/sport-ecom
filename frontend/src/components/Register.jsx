@@ -2,8 +2,9 @@ import React from "react";
 import { useState } from "react";
 import { register } from "../services/api";
 import "../styles/Register.css";
-import { showToast } from "../../libs/utils";
+import { showErrorToast, showToast } from "../../libs/utils";
 import { useNavigate } from "react-router-dom";
+import { FRONTEND_URL } from "../constants";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -21,13 +22,14 @@ const Register = () => {
       showToast("Đăng ký thành công!");
       navigate("/login");
     } catch (error) {
+      showErrorToast("Lỗi đăng ký tài khoản!")
       setError(error.message);
     }
   };
   return (
     <div className="register-container">
       <div className="logo-img">
-        <img src="/public/logo.jpg" alt="" />
+        <img src= {`${FRONTEND_URL}logo.jpg`} alt="" />
       </div>
       <form className="register-form" onSubmit={handleSubmit}>
         <div className="form-group">

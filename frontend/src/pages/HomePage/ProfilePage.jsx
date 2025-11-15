@@ -21,7 +21,8 @@ import { useSelector } from "react-redux";
 import { changePassword, editUser, OrderAPI } from "../../services/api";
 import LoadingPage from "../../components/LoadingPage";
 import { useNavigate } from "react-router-dom";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
+import { FRONTEND_URL } from "../../constants";
 
 function Price({ v }) {
   return <span className="price-text">{v.toLocaleString("vi-VN")}₫</span>;
@@ -83,7 +84,7 @@ export default function ProfilePage() {
       setEditing(false);
       showToast("Cập nhật thông tin thành công!");
     } catch (error) {
-      showToast("Lỗi khi cập nhật thông tin: " + error.message);
+      showErrorToast("Lỗi khi cập nhật thông tin: " + error.message);
     }
   };
 
@@ -121,12 +122,12 @@ export default function ProfilePage() {
   };
   const handleChangePassword = async () => {
     if (!newPassword.old || !newPassword.new || !newPassword.confirm) {
-      showToast("Vui lòng nhập đầy đủ các trường mật khẩu!");
+      showErrorToast("Vui lòng nhập đầy đủ các trường mật khẩu!");
       return;
     }
 
     if (newPassword.new !== newPassword.confirm) {
-      showToast("Mật khẩu xác nhận không khớp!");
+      showErrorToast("Mật khẩu xác nhận không khớp!");
       return;
     }
 
@@ -137,7 +138,7 @@ export default function ProfilePage() {
       setShowPasswordModal(false);
     } catch (error) {
       console.error("Lỗi khi đổi mật khẩu:", error);
-      showToast(error.response?.data?.message || "Đổi mật khẩu thất bại!");
+      showErrorToast("Đổi mật khẩu thất bại!");
     }
   };
 
@@ -153,7 +154,7 @@ export default function ProfilePage() {
               <div className="avatar">
                 {user.avatar ? (
                   <img
-                    src="/public/avatar.avif"
+                    src={`${FRONTEND_URL}avatar.avif`}
                     alt="avatar"
                     style={{
                       width: "100%",

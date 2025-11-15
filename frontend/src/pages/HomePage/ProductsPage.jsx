@@ -7,7 +7,7 @@ import Footer from "../../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/slices/cartSlice";
 import ProductFilterSection from "../../components/ProductFilterSection";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 
 const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
@@ -129,7 +129,7 @@ const ProductsPage = () => {
       showToast("Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Thêm vào giỏ hàng thất bại:", error);
-      showToast("Thêm vào giỏ hàng thất bại!");
+      showErrorToast("Thêm vào giỏ hàng thất bại!");
     }
   };
 
