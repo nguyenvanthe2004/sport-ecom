@@ -116,23 +116,6 @@ const ProductsPage = () => {
 }, [selectedCat, selectedBrand, priceFilter, categories, brands, page]);
 
 
-  const handleAddToCart = async (product, e) => {
-    e.stopPropagation();
-
-    if (!currentUser || !currentUser.userId) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      dispatch(addToCart(product, 1));
-      showToast("Đã thêm vào giỏ hàng!");
-    } catch (error) {
-      console.error("❌ Thêm vào giỏ hàng thất bại:", error);
-      showErrorToast("Thêm vào giỏ hàng thất bại!");
-    }
-  };
-
   return (
     <>
       <Header />
@@ -250,7 +233,6 @@ const ProductsPage = () => {
         <div className="productList">
           <ProductFilterSection
             products={products}
-            addToCart={handleAddToCart}
             page={page}
             totalPages={totalPages}
             onPageChange={handlePageChange}

@@ -6,7 +6,6 @@ import { BASE_URL } from "../constants";
 
 const ProductFilterSection = ({
   products = [],
-  addToCart,
   page,
   totalPages,
   onPageChange,
@@ -56,7 +55,10 @@ const ProductFilterSection = ({
                       <button
                         className="actions-btn cart-btn"
                         title="Thêm vào giỏ"
-                        onClick={(e) => addToCart(p, e)}
+                        onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/product/${p.slug}`);
+                      }}
                       >
                         <ShoppingCart size={18} />
                         <span>Giỏ hàng</span>
