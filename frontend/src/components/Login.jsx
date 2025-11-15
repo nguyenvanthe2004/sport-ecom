@@ -28,7 +28,7 @@ const Login = () => {
             if(response.user.role === 'admin'){
                 navigate('/admin/dashboard');
             } else if (response.user.role === 'user'){
-                navigate('/home');
+                navigate('/');
             } else {
                 setError('Unknown user role');
             }

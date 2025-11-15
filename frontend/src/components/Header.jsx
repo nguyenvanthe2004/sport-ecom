@@ -105,7 +105,7 @@ const Header = () => {
 
   return (
     <header className="header">
-      <a href="/home" className="logo">
+      <a href="/" className="logo">
         <div className="logo-container">
           <div className="logo-page">
             <img src={`${FRONTEND_URL}logo.jpg`} alt="Logo" />

@@ -45,7 +45,7 @@ const OrderPage = () => {
               <p>Bạn chưa có đơn hàng nào.</p>
               <button
                 className="continue-shopping"
-                onClick={() => (window.location.href = "/home")}
+                onClick={() => (window.location.href = "/")}
               >
                 Tiếp tục mua sắm
               </button>

@@ -69,7 +69,7 @@ const removeItem = async (id) => {
     0
   );
 
-  const handleClick = () => (navigate("/home"));
+  const handleClick = () => (navigate("/"));
   const handleCheckout = () => {
     if (isLoggedIn) {
       dispatch(setCheckoutItems(cart));

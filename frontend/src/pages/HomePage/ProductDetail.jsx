@@ -166,7 +166,7 @@ const ProductDetail = () => {
       <Header />
 
       <div className="breadcrumb">
-        <span onClick={() => navigate("/home")}>Trang chủ</span>
+        <span onClick={() => navigate("/")}>Trang chủ</span>
         <span className="separator">/</span>
         <span onClick={() => navigate("/products")}>Sản phẩm</span>
         <span className="separator">/</span>

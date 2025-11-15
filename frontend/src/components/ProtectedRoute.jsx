@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children, role }) => {
         }
         else {
           if (role == "admin")  return <Navigate to="/login" replace />;
-          else  return <Navigate to="/home" replace />;
+          else  return <Navigate to="/" replace />;
          
         }
       } catch (error) {
