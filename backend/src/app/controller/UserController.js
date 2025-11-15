@@ -22,12 +22,12 @@ class UserController {
 
       const totalPages = Math.ceil(totalUsers / limit);
       res.status(200).json({
-      page,
-      limit,
-      totalPages,
-      totalUsers,
-      users,
-    });
+        page,
+        limit,
+        totalPages,
+        totalUsers,
+        users,
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -65,9 +65,9 @@ class UserController {
 
       res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true, 
+        sameSite: "none", 
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: "lax",
       });
 
       res.json({

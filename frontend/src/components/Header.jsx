@@ -91,11 +91,6 @@ const Header = () => {
     setShowUserDropdown(false);
     navigate("/login");
   };
-  const handleRegister = () => {
-    dispatch(clearCurrentUser());
-    setShowUserDropdown(false);
-    navigate("/register");
-  };
 
   const handleMyOrders = () => {
     setShowUserDropdown(false);
@@ -276,7 +271,6 @@ const Header = () => {
             : showUserDropdown && (
                 <div className="user-dropdown">
                   <button onClick={handleLogin}>Đăng nhập</button>
-                  <button onClick={handleRegister}>Đăng ký</button>
                 </div>
               )}
         </div>

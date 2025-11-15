@@ -59,7 +59,7 @@ function App() {
         <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<AuthPage formType="login" />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<AuthPage formType="register" />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
 
