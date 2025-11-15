@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, removeFromCart } from "../redux/slices/cartSlice";
 import { clearCurrentUser } from "../redux/slices/currentUser";
 import { ProductAPI } from "../services/api";
-import { BASE_URL } from "../constants";
+import { BASE_URL, FRONTEND_URL } from "../constants";
 
 const Header = () => {
   const navigate = useNavigate();
