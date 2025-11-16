@@ -170,7 +170,7 @@ const DashboardPage = () => {
                       <div
                         className="bar-fill"
                         style={{
-                          height: `${Math.max(item.value *0.03)}px`,
+                          height: `${Math.max(item.value *0.00003)}px`,
                         }}
                       >
                         <div className="bar-value">

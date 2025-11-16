@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { OrderAPI } from "../../services/api";
 import LoadingPage from "../../components/LoadingPage";
-import { showToast } from "../../../libs/utils";
+import { showErrorToast, showToast } from "../../../libs/utils";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -112,7 +112,7 @@ const AdminOrders = () => {
       setOrders(data);
     } catch (error) {
       console.error("❌ Lỗi cập nhật trạng thái:", error);
-      showToast("Cập nhật thất bại!");
+      showErrorToast("Cập nhật thất bại!");
     }
   };
 
@@ -121,7 +121,7 @@ const AdminOrders = () => {
     if (!window.confirm("Bạn có chắc muốn xóa đơn hàng này không?")) return;
     try {
       await OrderAPI.delete(id);
-      alert("🗑️ Đã xóa đơn hàng thành công!");
+      showToast("Đã xóa đơn hàng thành công!");
       setOrders((prev) => prev.filter((o) => o._id !== id));
     } catch (error) {
       console.error("❌ Lỗi khi xóa:", error);

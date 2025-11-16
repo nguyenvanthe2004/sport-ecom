@@ -51,7 +51,7 @@ const UpdateProduct = () => {
         setVariants(
           p.variants.map((v) => ({
             ...v,
-            image: `${BASE_URL}${v.image}`
+            image: `${v.image}`
              // để upload nếu user chọn
           }))
         );
@@ -253,7 +253,7 @@ const UpdateProduct = () => {
                 />
                 {v.image && (
                   <img
-                    src={v.image}
+                    src={`${BASE_URL}${v.image}`}
                     alt="preview"
                     className="mt-2 rounded preview-img"
                     width="80"

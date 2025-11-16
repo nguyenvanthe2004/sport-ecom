@@ -67,30 +67,7 @@ const ProductSection = () => {
                 />
 
                 <div className="product-overlay">
-                  <div className="product-actions">
-                    <button
-                      className="actions-btn view-btn"
-                      title="Xem chi tiết"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/product/${p.slug}`);
-                      }}
-                    >
-                      <Eye size={18} />
-                      <span>Xem</span>
-                    </button>
-                    <button
-                      className="actions-btn cart-btn"
-                      title="Thêm vào giỏ"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/product/${p.slug}`);
-                      }}
-                    >
-                      <ShoppingCart size={18} />
-                      <span>Giỏ hàng</span>
-                    </button>
-                  </div>
+                  
                 </div>
 
                 {p.variants?.[0]?.discount && (

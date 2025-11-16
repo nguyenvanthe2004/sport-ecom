@@ -62,7 +62,13 @@ const OrderPage = () => {
                           .toLowerCase()
                           .replace(/\s/g, "-")}`}
                       >
-                        Hoàn thành
+                        {order.status === "pending"
+                          ? "Đang xử lý"
+                          : order.status === "shipped"
+                          ? "Đang giao"
+                          : order.status === "delivered"
+                          ? "Hoàn thành"
+                          : "Đã hủy"}
                       </span>
                     </div>
 

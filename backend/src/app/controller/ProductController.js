@@ -144,7 +144,7 @@ class ProductController {
 
         {
           $lookup: {
-            from: "variants", 
+            from: "variants",
             localField: "variants",
             foreignField: "_id",
             as: "variants",
@@ -191,6 +191,7 @@ class ProductController {
             category: { $arrayElemAt: ["$category", 0] },
             brand: { $arrayElemAt: ["$brand", 0] },
             variants: 1,
+            slug: 1,
           },
         },
       ]);

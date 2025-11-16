@@ -224,7 +224,6 @@ const ProductDetail = () => {
               <Eye size={16} />
               {product.categoryId?.name || "Chưa phân loại"}
             </span>
-            <span className="product-sold">Đã bán: {product.sold || 0}</span>
           </div>
 
           {/* Giá */}

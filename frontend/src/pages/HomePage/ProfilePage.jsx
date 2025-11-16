@@ -69,9 +69,9 @@ export default function ProfilePage() {
     0
   );
   const deliveredOrders = orders
-  .filter((order) => order.status === "delivered")
-  .slice(-3) 
-  .reverse();
+    .filter((order) => order.status === "delivered")
+    .slice(-3)
+    .reverse();
 
   const saveProfile = async () => {
     try {
@@ -265,13 +265,7 @@ export default function ProfilePage() {
                   <td>{order.totalPrice?.toLocaleString("vi-VN")}₫</td>
                   <td>
                     <span
-                      className={`status-badge ${
-                        order.status === "delivered"
-                          ? "delivered"
-                          : order.status === "pending"
-                          ? "status-pending"
-                          : "shipping"
-                      }`}
+                      className={`status-badge ${order.status === "delivered"}`}
                     >
                       {order.status}
                     </span>
