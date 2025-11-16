@@ -6,6 +6,7 @@ const route = require("./routes");
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser")
 const path = require("path");
+require('dotenv').config()
 
 
 const port = 8000;
@@ -16,7 +17,7 @@ app.use(express.static('public'));
 
 app.use(cookieParser())
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: '' + process.env.CORS_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true

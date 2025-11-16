@@ -1,6 +1,7 @@
 const Product = require("../models/Products");
 const Variant = require("../models/Variants");
 const slugify = require("slugify");
+const mongoose = require("mongoose");
 
 class ProductController {
   async getAllProducts(req, res) {
@@ -12,13 +13,13 @@ class ProductController {
       const totalProducts = await Product.countDocuments();
 
       const products = await Product.find()
-        .populate("brandId", "name") 
-        .populate("categoryId", "name") 
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
         .populate({
-          path: "variants", 
-          select: "nameDetail price stock image", 
+          path: "variants",
+          select: "nameDetail price stock image",
         })
-        .sort({ createAt: -1 }) 
+        .sort({ createAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean();
@@ -37,6 +38,174 @@ class ProductController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  async getProductById(req, res) {
+    try {
+      const { id } = req.params;
+      const product = await Product.findById(id)
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
+        .populate({
+          path: "variants",
+          select: "nameDetail price stock image",
+        });
+
+      if (!product) {
+        return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+      }
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ message: "Lỗi server", error });
+    }
+  }
+  async searchProducts(req, res) {
+    try {
+      const { q, categoryId, brandId, minPrice, maxPrice } = req.query;
+
+      if (!q && !categoryId && !brandId && !minPrice && !maxPrice) {
+        return res
+          .status(400)
+          .json({ message: "Vui lòng nhập từ khóa hoặc bộ lọc" });
+      }
+
+      const productFilter = {};
+
+      if (categoryId) productFilter.categoryId = categoryId;
+
+      if (brandId) productFilter.brandId = brandId;
+
+      if (q) {
+        productFilter.name = { $regex: q, $options: "i" };
+      }
+
+      let products = await Product.find(productFilter)
+        .populate("brandId", "name")
+        .populate("categoryId", "name")
+        .populate({
+          path: "variants",
+          select: "nameDetail price stock image",
+        })
+        .sort({ createAt: -1 })
+        .lean();
+      if (products.length === 0 && q) {
+        const variantMatches = await Variant.find({
+          nameDetail: { $regex: q, $options: "i" },
+        }).lean();
+
+        if (variantMatches.length > 0) {
+          const productIds = variantMatches.map((v) => v.productId);
+          products = await Product.find({ _id: { $in: productIds } })
+            .populate("brandId", "name")
+            .populate("categoryId", "name")
+            .populate({
+              path: "variants",
+              select: "nameDetail price stock image",
+            })
+            .sort({ createAt: -1 })
+            .lean();
+        }
+      }
+      if (minPrice || maxPrice) {
+        products = products.filter((p) => {
+          const matchedVariants = p.variants.filter((v) => {
+            if (minPrice && v.price < minPrice) return false;
+            if (maxPrice && v.price > maxPrice) return false;
+            return true;
+          });
+          return matchedVariants.length > 0;
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        total: products.length,
+        products,
+      });
+    } catch (error) {
+      console.error("❌ Lỗi khi tìm kiếm sản phẩm:", error);
+      res.status(500).json({ message: "Lỗi server khi tìm kiếm sản phẩm" });
+    }
+  }
+
+  async getFilteredProducts(req, res) {
+    try {
+      const { categoryId, brandId, minPrice, maxPrice } = req.query;
+
+      const matchStage = {};
+      if (categoryId)
+        matchStage.categoryId = new mongoose.Types.ObjectId(categoryId);
+      if (brandId) matchStage.brandId = new mongoose.Types.ObjectId(brandId);
+
+      const min = minPrice ? parseFloat(minPrice) : 0;
+      const max = maxPrice ? parseFloat(maxPrice) : Number.MAX_SAFE_INTEGER;
+
+      const products = await Product.aggregate([
+        { $match: matchStage },
+
+        {
+          $lookup: {
+            from: "variants", 
+            localField: "variants",
+            foreignField: "_id",
+            as: "variants",
+          },
+        },
+        {
+          $addFields: {
+            variants: {
+              $filter: {
+                input: "$variants",
+                as: "v",
+                cond: {
+                  $and: [
+                    { $gte: ["$$v.price", min] },
+                    { $lte: ["$$v.price", max] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        { $match: { "variants.0": { $exists: true } } },
+
+        {
+          $lookup: {
+            from: "categories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brandId",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            category: { $arrayElemAt: ["$category", 0] },
+            brand: { $arrayElemAt: ["$brand", 0] },
+            variants: 1,
+          },
+        },
+      ]);
+
+      res.status(200).json({
+        success: true,
+        total: products.length,
+        products,
+      });
+    } catch (error) {
+      console.error("❌ Lỗi khi lọc sản phẩm:", error);
+      res.status(500).json({ message: "Lỗi server khi lọc sản phẩm" });
+    }
+  }
+
   async getProductBySlug(req, res) {
     try {
       const { slug } = req.params;
@@ -105,7 +274,7 @@ class ProductController {
       // Tạo slug tự động, đảm bảo unique bằng timestamp
       const slug =
         req.body.slug || slugify(name, { lower: true, strict: true });
-const newProduct = new Product({
+      const newProduct = new Product({
         userId,
         name,
         description,
@@ -178,7 +347,6 @@ const newProduct = new Product({
       if (typeof variants === "string") variants = JSON.parse(variants);
       variants = variants || [];
 
-      // Cập nhật hoặc thêm mới
       for (const variant of variants) {
         if (variant.id) {
           await Variant.findByIdAndUpdate(variant.id, {
@@ -192,9 +360,9 @@ const newProduct = new Product({
             image: variant.image,
           });
           await newVariant.save();
-          await Product.findByIdAndUpdate(savedProduct._id, {
-          $push: { variants: savedVariant._id },
-        });
+          await Product.findByIdAndUpdate(updatedProduct._id, {
+            $push: { variants: updatedProduct._id },
+          });
         }
       }
 
@@ -207,7 +375,7 @@ const newProduct = new Product({
         product: {
           userId: updatedProduct.userId,
           productId: updatedProduct._id,
-name: updatedProduct.name,
+          name: updatedProduct.name,
           description: updatedProduct.description,
           brandId: updatedProduct.brandId,
           categoryId: updatedProduct.categoryId,

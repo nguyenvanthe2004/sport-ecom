@@ -5,18 +5,8 @@
   overflow: hidden;
 }
 
-.contact-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #e31837 0%, #ff4800 100%);
-}
-
 .contact-container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
@@ -32,12 +22,12 @@
 .contact-container h2::after {
   content: '';
   position: absolute;
-  bottom: -8px;
-  left: 50%;
+  bottom: -10px;
+  left: 9%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, #e31837, #ff4800);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b35, #f7931e);
   border-radius: 2px;
 }
 
@@ -119,13 +109,18 @@
 }
 
 .contact-form button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   transition: left 0.5s ease;
 }
 
@@ -161,7 +156,7 @@
 }
 
 .contact-info > div::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: 0;
@@ -188,7 +183,7 @@
 }
 
 .contact-info h4::before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 8px;
   height: 8px;

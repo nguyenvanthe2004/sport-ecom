@@ -13,9 +13,11 @@ import {
   Truck,
   XCircle,
   CheckCircle,
+  ShoppingCart,
 } from "lucide-react";
 import { OrderAPI } from "../../services/api";
 import LoadingPage from "../../components/LoadingPage";
+import { showToast } from "../../../libs/utils";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -28,20 +30,27 @@ const AdminOrders = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Lấy danh sách đơn hàng
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
+
+  const fetchOrders = async (page) => {
+    try {
+      setLoading(true);
+      const data = await OrderAPI.getAll(page, limit);
+      setOrders(data.orders || []);
+      setTotalPages(data.totalPages || 1);
+    } catch (error) {
+      console.error("❌ Lỗi lấy danh sách đơn hàng:", error);
+    } finally {
+      setLoading(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await OrderAPI.getAll();
-        setOrders(data);
-      } catch (error) {
-        console.error("❌ Lỗi lấy danh sách đơn hàng:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+    fetchOrders(page);
+  }, [page]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -127,25 +136,6 @@ const AdminOrders = () => {
     delivered: orders.filter((o) => o.status === "delivered").length,
     cancelled: orders.filter((o) => o.status === "cancelled").length,
   };
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
 
   if (loading) return <LoadingPage />;
   return (
@@ -154,7 +144,7 @@ const AdminOrders = () => {
         {/* Header */}
         <div className="page-header">
           <h1 className="page-title">
-            <Package size={32} /> Quản lý đơn hàng
+            <ShoppingCart size={32} /> Quản lý đơn hàng
           </h1>
           <p className="page-subtitle">Theo dõi và quản lý tất cả đơn hàng</p>
         </div>
@@ -302,32 +292,58 @@ const AdminOrders = () => {
           )}
         </div>
 
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+              «
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                className={page === i + 1 ? "active" : ""}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              »
+            </button>
+          </div>
+        )}
+
         {/* ✅ Modal chỉnh sửa */}
         {editMode && selectedOrder && (
-          <div className="modal-overlay">
-            <div className="modal-dialog modal-edit">
-              <div className="modal-header">
-                <h3>Cập nhật trạng thái đơn hàng</h3>
-              </div>
+          <div className="modal-overlay" onClick={() => setEditMode(false)}>
+            <div
+              className="modal"
+              onClick={(e) => e.stopPropagation()} // Ngăn đóng khi click bên trong
+            >
+              <h3 className="modal-title">Cập nhật trạng thái đơn hàng</h3>
 
-              <div className="modal-body">
+              <div className="form-group">
                 <label className="form-label">Trạng thái đơn hàng</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="form-select"
+                  className="form-input"
                 >
                   <option value="pending">Chờ xử lý</option>
                   <option value="shipped">Đang giao</option>
                   <option value="delivered">Đã giao</option>
                   <option value="cancelled">Đã hủy</option>
                 </select>
+              </div>
 
+              <div className="form-group">
                 <label className="form-label">Trạng thái thanh toán</label>
                 <select
                   value={paymentStatus}
                   onChange={(e) => setPaymentStatus(e.target.value)}
-                  className="form-select"
+                  className="form-input"
                 >
                   <option value="unpaid">Chưa thanh toán</option>
                   <option value="paid">Đã thanh toán</option>
@@ -335,14 +351,14 @@ const AdminOrders = () => {
                 </select>
               </div>
 
-              <div className="modal-footer">
+              <div className="modal-actions">
                 <button
+                  className="btn-cancel"
                   onClick={() => setEditMode(false)}
-                  className="btn btn-secondary"
                 >
                   Hủy
                 </button>
-                <button onClick={handleUpdate} className="btn btn-primary">
+                <button className="btn-primary" onClick={handleUpdate}>
                   Lưu thay đổi
                 </button>
               </div>

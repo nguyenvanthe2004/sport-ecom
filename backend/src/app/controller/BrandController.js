@@ -9,9 +9,23 @@ class BrandController {
       res.status(500).json({ message: error.message });
     }
   }
+  async getBrandById(req, res) {
+      try {
+        const { id } = req.params;
+        const brand = await Brand.findById(id);
+  
+        if (!brand) {
+          return res.status(404).json({ message: "Không tìm thấy thuong hieu" });
+        }
+        res.status(200).json(brand);
+      } catch (error) {
+        res.status(500).json({ message: "Lỗi server", error });
+      }
+    }
   async createBrand(req, res) {
     try {
-      const { userId, name, description } = req.body;
+      const userId = req.user.userId;
+      const { name, description } = req.body;
       if (!name) {
         return res.status(400).json({ message: "Brand name is required" });
       }

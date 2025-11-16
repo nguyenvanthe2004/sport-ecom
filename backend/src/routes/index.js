@@ -8,6 +8,7 @@ const cartRoutes = require('./cart');
 const cartitemRoutes = require('./cartitem');
 const paymentRoutes = require('./payment');
 const uploadRoutes = require('./upload');
+const dashboardRoutes = require('./dashboard');
 
 function route(app) {
     app.use('/user', userRoutes);
@@ -29,5 +30,7 @@ function route(app) {
     app.use('/payment', paymentRoutes);
 
     app.use('/upload', uploadRoutes);
+
+    app.use('/dashboard', dashboardRoutes);
 }
 module.exports = route;

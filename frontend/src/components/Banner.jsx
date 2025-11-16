@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/Banner.css";
+import { FRONTEND_URL } from "../constants";
 
 const Banner = () => {
   return (
@@ -7,7 +8,7 @@ const Banner = () => {
       <div className="banner-main">
         {/* Ảnh banner lớn */}
         <img
-          src="/public/banner_1.jpg"
+          src={`${FRONTEND_URL}banner_1.jpg`}
           alt="Banner thể thao"
           className="banner-main-image"
         />
@@ -24,22 +25,22 @@ const Banner = () => {
         {/* Dự án nổi bật */}
         <div className="banner-projects">
           <div className="project-item">
-            <img src="/public/duan_1.avif" alt="Bóng đá" />
+            <img src={`${FRONTEND_URL}duan_1.avif`}alt="Bóng đá" />
             <div className="project-text">Trang phục bóng đá chuyên nghiệp</div>
           </div>
 
           <div className="project-item">
-            <img src="/public/duan_2.jfif" alt="Bóng chuyền" />
+            <img src={`${FRONTEND_URL}duan_2.jfif`} alt="Bóng chuyền" />
             <div className="project-text">Giải bóng chuyền quốc gia</div>
           </div>
 
           <div className="project-item">
-            <img src="/public/duan_3.jpg" alt="Học sinh thể thao" />
+            <img src={`${FRONTEND_URL}duan_3.jpg`} alt="Học sinh thể thao" />
             <div className="project-text">Đồng phục thể thao học đường</div>
           </div>
 
           <div className="project-item">
-            <img src="/public/duan_4.webp" alt="Cầu lông" />
+            <img src={`${FRONTEND_URL}duan_4.webp`} alt="Cầu lông" />
             <div className="project-text">Giải Cầu lông phong trào</div>
           </div>
         </div>

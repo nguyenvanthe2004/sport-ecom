@@ -2,41 +2,51 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProductAPI } from "../../services/api";
 import "../../styles/ProductManager.css";
+import { showErrorToast, showToast } from "../../../libs/utils";
+import LoadingPage from "../../components/LoadingPage";
+import { Package } from "lucide-react";
+import { BASE_URL } from "../../constants";
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10;
   const navigate = useNavigate();
 
   // 🔹 Lấy danh sách sản phẩm từ API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const res = await ProductAPI.getAll();
-        setProducts(res.products || []); // đảm bảo có mảng products
-      } catch (err) {
-        console.error("❌ Lỗi lấy danh sách sản phẩm:", err);
-        alert("Không thể tải danh sách sản phẩm!");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async (page) => {
+    try {
+      setLoading(true);
+      const res = await ProductAPI.getAll(page, limit);
+      setProducts(res.products || []);
+      setTotalPages(res.totalPages || 1);
+    } catch (err) {
+      console.error("❌ Lỗi lấy danh sách sản phẩm:", err);
+      showErrorToast("Không thể tải danh sách sản phẩm!");
+    } finally {
+      setLoading(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    fetchProducts(page);
+  }, [page]);
 
   // 🔹 Xóa sản phẩm
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) {
       try {
         await ProductAPI.delete(id);
-        setProducts(products.filter((p) => p._id !== id));
-        alert("✅ Đã xóa sản phẩm!");
+        showToast("Đã xóa sản phẩm!");
+        // Reload dữ liệu trang hiện tại
+        fetchProducts(page);
       } catch (err) {
         console.error("❌ Lỗi xóa sản phẩm:", err);
-        alert("Không thể xóa sản phẩm!");
+        showErrorToast("Không thể xóa sản phẩm!");
       }
     }
   };
@@ -46,11 +56,19 @@ const ProductManagement = () => {
     setExpandedProductId((prev) => (prev === productId ? null : productId));
   };
 
+  if (loading) return <LoadingPage />;
+
   return (
     <div className="container mt-4">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold">Quản lý sản phẩm</h2>
+        <div>
+          <h2 className="fw-bold">
+            <Package size={32} /> Quản lý sản phẩm
+          </h2>
+          <p className="page-subtitle">Theo dõi và quản lý tất cả sản phẩm</p>
+        </div>
+
         <Link to="/admin/products/create" className="btn btn-primary">
           + Thêm sản phẩm
         </Link>
@@ -73,21 +91,15 @@ const ProductManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="9" className="text-center py-4 text-muted">
-                  Đang tải dữ liệu...
-                </td>
-              </tr>
-            ) : products.length > 0 ? (
+            {products.length > 0 ? (
               products.map((p, index) => (
                 <React.Fragment key={p._id}>
                   <tr>
-                    <td>{index + 1}</td>
+                    <td>{(page - 1) * limit + index + 1}</td>
                     <td>
                       {p.variants?.[0]?.image ? (
                         <img
-                          src={`http://localhost:8000/${p.variants[0].image}`}
+                          src={`${BASE_URL}${p.variants[0].image}`}
                           alt={p.name}
                           width="55"
                           height="55"
@@ -133,7 +145,7 @@ const ProductManagement = () => {
                     </td>
                   </tr>
 
-                  {/* 🔽 Hiện danh sách biến thể */}
+                  {/* Hiện danh sách biến thể */}
                   {expandedProductId === p._id && (
                     <tr>
                       <td colSpan="9">
@@ -150,7 +162,7 @@ const ProductManagement = () => {
                                 >
                                   <div className="card border-0 shadow-sm">
                                     <img
-                                      src={`http://localhost:8000/${v.image}`}
+                                      src={`${BASE_URL}${v.image}`}
                                       alt={v.nameDetail || "variant"}
                                       className="card-img-top rounded-top"
                                       height="120"
@@ -191,6 +203,33 @@ const ProductManagement = () => {
           </tbody>
         </table>
       </div>
+
+      {/* 🔹 Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination mt-3 text-center">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            «
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              className={page === i + 1 ? "active" : ""}
+              onClick={() => setPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            »
+          </button>
+        </div>
+      )}
     </div>
   );
 };

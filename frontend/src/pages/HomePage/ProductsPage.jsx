@@ -1,109 +1,121 @@
 import React, { useEffect, useState } from "react";
-import { CartAPI, CategoryAPI, ProductAPI } from "../../services/api"; // import API của bạn
+import { BrandAPI, CartAPI, CategoryAPI, ProductAPI } from "../../services/api";
 import "../../styles/ProductsPage.css";
-import { ShoppingCart, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { useSelector } from "react-redux";
-import ProductSection from "../../components/ProductSection";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../redux/slices/cartSlice";
+import ProductFilterSection from "../../components/ProductFilterSection";
+import { showErrorToast, showToast } from "../../../libs/utils";
 
 const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [selectedCat, setSelectedCat] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [filtered, setFiltered] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState(null);
   const [priceFilter, setPriceFilter] = useState("");
-
+  const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 15;
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 
+  // ✅ Lấy danh mục sản phẩm
+  const fetchProducts = async (page) => {
+    try {
+      const data = await ProductAPI.getAll(page, limit);
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error("Lỗi khi tải sản phẩm:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(page);
+  }, [page]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
-      const catRes = await CategoryAPI.getAll();
-      const prodRes = await ProductAPI.getAll();
-      setCategories(catRes.categories || catRes);
-      setProducts(prodRes.products || prodRes);
-      setFiltered(prodRes.products || prodRes);
+      try {
+        const [catRes, bRes] = await Promise.all([
+          CategoryAPI.getAll(),
+          BrandAPI.getAll(),
+        ]);
+        setCategories(catRes.categories || catRes);
+        setBrands(bRes.brands || bRes);
+      } catch (error) {
+        console.error("❌ Lỗi khi tải danh mục:", error);
+      }
     };
     fetchData();
   }, []);
 
   useEffect(() => {
-    let data = [...products];
-    if (selectedCat)
-      data = data.filter((p) => p.category?.name === selectedCat);
-
-    if (priceFilter) {
-      switch (priceFilter) {
-        case "under500":
-          data = data.filter((p) => p.variants?.[0]?.price < 500000);
-          break;
-        case "500to1000":
-          data = data.filter(
-            (p) =>
-              p.variants?.[0]?.price >= 500000 &&
-              p.variants?.[0]?.price < 1000000
-          );
-          break;
-        case "1000to2000":
-          data = data.filter(
-            (p) =>
-              p.variants?.[0]?.price >= 1000000 &&
-              p.variants?.[0]?.price < 2000000
-          );
-          break;
-        case "over2000":
-          data = data.filter((p) => p.variants?.[0]?.price >= 2000000);
-          break;
-        default:
-          break;
-      }
-    }
-
-    setFiltered(data);
-  }, [selectedCat, priceFilter, products]);
-  const addToCart = async (product, e) => {
-    e?.stopPropagation?.();
+  const fetchFiltered = async () => {
     try {
-      const variantId = product.variants?.[0]?._id;
-      const quantity = 1;
+      const hasCategory = !!selectedCat;
+      const hasBrand = !!selectedBrand;
+      const hasPrice = !!priceFilter;
 
-      if (currentUser && currentUser.userId) {
-        await CartAPI.addToCart(variantId, quantity);
-        window.dispatchEvent(new Event("cartUpdated"));
-        showToast("Đã thêm vào giỏ hàng!");
-      } else {
-        navigate("/login");
+      // Nếu không có bộ lọc nào => quay lại API phân trang mặc định
+      if (!hasCategory && !hasBrand && !hasPrice) {
+        fetchProducts(page);
+        return;
       }
+
+      const params = {};
+
+      if (hasCategory) {
+        const selectedCategory = categories.find(c => c.name === selectedCat);
+        if (selectedCategory) params.categoryId = selectedCategory._id;
+      }
+
+      if (hasBrand) {
+        const selectedB = brands.find(b => b.name === selectedBrand);
+        if (selectedB) params.brandId = selectedB._id;
+      }
+
+      if (hasPrice) {
+        switch (priceFilter) {
+          case "under500":
+            params.maxPrice = 500000;
+            break;
+          case "500to1000":
+            params.minPrice = 500000;
+            params.maxPrice = 1000000;
+            break;
+          case "1000to2000":
+            params.minPrice = 1000000;
+            params.maxPrice = 2000000;
+            break;
+          case "over2000":
+            params.minPrice = 2000000;
+            break;
+        }
+      }
+
+      const res = await ProductAPI.getFiltered(params);
+      setProducts(res.products || []);
+      setTotalPages(1);
     } catch (error) {
-      console.error("❌ Lỗi khi thêm vào giỏ hàng:", error);
-      showToast("Thêm vào giỏ hàng thất bại!");
+      console.error("❌ Lỗi khi lọc sản phẩm:", error);
     }
   };
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
 
-    setTimeout(() => {
-      toast.classList.add("show");
-    }, 100);
+  fetchFiltered();
+}, [selectedCat, selectedBrand, priceFilter, categories, brands, page]);
 
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
+
   return (
     <>
       <Header />
@@ -129,6 +141,31 @@ const ProductsPage = () => {
               <button
                 className="clear-btn"
                 onClick={() => setSelectedCat(null)}
+              >
+                Bỏ chọn
+              </button>
+            </li>
+          </ul>
+
+          <h3>Thương hiệu sản phẩm</h3>
+          <ul>
+            {brands.map((b) => (
+              <li key={b._id}>
+                <label>
+                  <input
+                    type="radio"
+                    name="brand"
+                    checked={selectedBrand === b.name}
+                    onChange={() => setSelectedBrand(b.name)}
+                  />
+                  {b.name}
+                </label>
+              </li>
+            ))}
+            <li>
+              <button
+                className="clear-btn"
+                onClick={() => setSelectedBrand(null)}
               >
                 Bỏ chọn
               </button>
@@ -194,12 +231,17 @@ const ProductsPage = () => {
 
         {/* Danh sách sản phẩm */}
         <div className="productList">
-          <ProductSection />
+          <ProductFilterSection
+            products={products}
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
       <Footer />
     </>
   );
-}
+};
 
 export default ProductsPage;

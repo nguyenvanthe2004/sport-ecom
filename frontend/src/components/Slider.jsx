@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import "../styles/Slider.css"
+import { useNavigate } from "react-router-dom";
+import { FRONTEND_URL } from "../constants";
 
 const images = [
-  "/public/slider_2.avif",
-  "/public/slider_1.jpg",
-  "/public/slider_3.webp",
+  `${FRONTEND_URL}slider_2.avif`,
+  `${FRONTEND_URL}slider_1.jpg`,
+  `${FRONTEND_URL}slider_3.webp`,
 ];
+
 
 const Slider = () => {
   const [current, setCurrent] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -56,7 +60,7 @@ const Slider = () => {
             <div className="slider-overlay">
               <h1>SPORTWEB</h1>
               <p>Thời trang & dụng cụ thể thao chính hãng</p>
-              <button className="btn-primary">Mua ngay</button>
+              <button className="btn-primary" onClick={() => navigate("/products")}>Mua ngay</button>
             </div>
           </div>
         ))}
@@ -88,7 +92,7 @@ const Slider = () => {
 
       <div style={{ padding: '3rem 2rem', background: '#f5f5f5' }}>
         <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '1rem' }}>
-          Sản Phẩm Nổi Bật
+          Sản Phẩm Mới Nhất
         </h2>
         <p style={{ textAlign: 'center', color: '#666' }}>
           Khám phá các sản phẩm thể thao chất lượng cao

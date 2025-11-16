@@ -1,6 +1,7 @@
 import React from "react";
 import { Facebook, Instagram, Youtube, Phone, Mail, MapPin, Clock } from "lucide-react";
 import "../styles/Footer.css";
+import { FRONTEND_URL } from "../constants";
 
 const Footer = () => {
   return (
@@ -11,7 +12,7 @@ const Footer = () => {
           {/* Column 1: About */}
           <div className="footer-column">
             <div className="footer-logo">
-              <img src="./public/logo.jpg" alt="Logo" />
+              <img src={`${FRONTEND_URL}logo.jpg`} alt="Logo" />
             </div>
             <h3 className="footer-title">WEBTHETHAO.VN</h3>
             <p className="footer-description">

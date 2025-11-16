@@ -1,19 +1,20 @@
 /* Tổng thể vùng nội dung */
 .container {
-  max-width: 85%;
   background-color: #f8f9fc;
   min-height: calc(100vh - 70px);
   box-sizing: border-box;
-  margin-left: 12%;
- 
 }
 
 /* Tiêu đề và nút thêm */
 .container h2 {
-  font-size: 24px;
+   font-size: 2rem;
   font-weight: 700;
   color: #222;
    margin-top: 20px
+}
+.container h2 svg {
+  color: #2563eb;
+  flex-shrink: 0;
 }
 
 .btn-primary {
@@ -48,10 +49,12 @@
   font-weight: 600;
   color: #444;
   vertical-align: middle;
+  text-align: center;
 }
 
 .table td {
   vertical-align: middle;
+  text-align: center;
 }
 
 .table-hover tbody tr:hover {

@@ -16,6 +16,8 @@ import { OrderAPI, CartAPI } from "../../services/api";
 import LoadingPage from "../../components/LoadingPage";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import { showErrorToast, showToast } from "../../../libs/utils";
+import { BASE_URL, FRONTEND_URL } from "../../constants";
 
 const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState(
@@ -81,38 +83,19 @@ const Checkout = () => {
 
     try {
       setLoading(true);
-      const response = await OrderAPI.create(orderData);
+      await OrderAPI.create(orderData);
       showToast("Bạn đã đặt hàng thành công!");
       await CartAPI.clearCart();
       navigate("/orders");
     } catch (error) {
       console.error("❌ Lỗi khi tạo đơn hàng:", error);
-      showToast("Lỗi khi đặt hàng!");
+      showErrorToast("Lỗi khi đặt hàng!");
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-<span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
-
+  
   if (loading) return <LoadingPage />;
 
   return (
@@ -225,7 +208,7 @@ const Checkout = () => {
                     <div className="qr-section">
                       <p className="qr-title">Quét mã để thanh toán</p>
                       <img
-                        src="/public/qr_code.png"
+                        src={`${FRONTEND_URL}qr_code.jpg`}
                         alt="QR Code"
                         className="qr-image"
                       />
@@ -265,13 +248,16 @@ const Checkout = () => {
                       >
                         <div className="checkout-image">
                           <img
-                            src={`http://localhost:8000${item.variantId?.image}`}
+                            src={`${BASE_URL}${item.variantId?.image}`}
                             alt={item.variantId?.productId?.name || "Sản phẩm"}
                           />
                         </div>
                         <div className="checkout-details">
                           <p className="checkout-name">
                             {item.variantId?.productId?.name}
+                          </p>
+                          <p className="checkout-nameDetail">
+                            {item.variantId?.nameDetail}
                           </p>
                           <p className="checkout-quantity">
                             Số lượng: {item.quantity}

@@ -5,55 +5,12 @@
   background: #f9f9f9;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
-
-/* Sidebar */
-.sidebar-admin {
-  width: 240px;
-  background: #fff;
-  border-right: 1px solid #e6e6e6;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  padding: 20px 15px;
-}
-
-.sidebar-admin h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 30px;
-  text-align: center;
-  color: #333;
-}
-
-.sidebar-admin ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar-admin ul li {
-  margin-bottom: 15px;
-}
-
-.sidebar-admin ul li a {
-  display: block;
-  padding: 10px 14px;
-  color: #444;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s ease-in-out;
-}
-
-.sidebar-admin ul li a:hover {
-  background: #f0f0f0;
-  color: #000;
-}
-
 /* Main content */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding-left: 230px;
 }
 
 /* Header */

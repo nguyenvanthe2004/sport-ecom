@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CartAPI, ProductAPI } from "../../services/api";
 import {
@@ -16,6 +16,8 @@ import Footer from "../../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingPage from "../../components/LoadingPage";
 import { addToCart, fetchCart } from "../../redux/slices/cartSlice";
+import { showErrorToast, showToast } from "../../../libs/utils";
+import { BASE_URL } from "../../constants";
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -30,7 +32,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
-  const cart = useSelector((state) => state.cart.items);
+  const [subImages, setSubImages] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +45,7 @@ const ProductDetail = () => {
 
         if (p?.variants?.length > 0) {
           const defaultVariant = p.variants[0];
-          setMainImage(`http://localhost:8000/${defaultVariant.image}`);
+          setMainImage(`${BASE_URL}${defaultVariant.image}`);
 
           const [firstColor, firstSize] = defaultVariant.nameDetail.split("-");
           setSelectedColor(firstColor?.trim() || "");
@@ -74,6 +76,18 @@ const ProductDetail = () => {
   ];
 
   useEffect(() => {
+    if (!product?.variants) return;
+
+    const images = product.variants.reduce((acc, variant) => {
+      const color = variant.nameDetail.split("-")[0].trim();
+      if (!acc[color]) acc[color] = variant.image;
+      return acc;
+    }, {});
+
+    setSubImages(images);
+  }, [product]);
+
+  useEffect(() => {
     if (product && selectedColor && selectedSize) {
       const found = product.variants.find((v) => {
         const [color, size] = v.nameDetail.split("-");
@@ -81,30 +95,10 @@ const ProductDetail = () => {
       });
       setCurrentVariant(found || null);
       if (found) {
-        setMainImage(`http://localhost:8000/${found.image}`);
+        setMainImage(`${BASE_URL}${found.image}`);
       }
     }
   }, [selectedColor, selectedSize, product]);
-
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
 
   const handleAddToCart = async (e) => {
     e?.stopPropagation?.();
@@ -115,11 +109,11 @@ const ProductDetail = () => {
     }
 
     try {
-      await dispatch(addToCart(product, 1));
+      dispatch(addToCart(currentVariant, quantity));
       showToast("Đã thêm vào giỏ hàng!");
     } catch (error) {
       console.error("❌ Thêm vào giỏ hàng thất bại:", error);
-      showToast("Thêm vào giỏ hàng thất bại!");
+      showErrorToast("Thêm vào giỏ hàng thất bại!");
     }
   };
 
@@ -130,25 +124,24 @@ const ProductDetail = () => {
     }
 
     if (!currentVariant) {
-      showToast("Vui lòng chọn màu và kích cỡ!");
+      showErrorToast("Vui lòng chọn màu và kích cỡ!");
       return;
     }
 
     const buyNowItem = {
       _id: currentVariant._id,
-      productId: {
-        _id: product._id,
-        name: product.name,
-      },
       variantId: {
         _id: currentVariant._id,
         nameDetail: currentVariant.nameDetail,
         price: currentVariant.price,
         image: currentVariant.image,
+        productId: {
+          _id: product._id,
+          name: product.name,
+        },
       },
       quantity,
     };
-    console.log(buyNowItem);
     navigate("/checkout", {
       state: {
         buyNowItem,
@@ -195,17 +188,18 @@ const ProductDetail = () => {
           </div>
 
           <div className="thumbnail-list">
-            {product.variants?.map((v, i) => (
+            {Object.entries(subImages).map(([color, image]) => (
               <img
-                key={i}
-                src={`http://localhost:8000/${v.image}`}
-                alt={`variant-${i}`}
+                key={color}
+                src={`${BASE_URL}${image}`}
+                alt={color}
+                width={100}
                 className={
-                  mainImage === `http://localhost:8000/${v.image}`
+                  mainImage === `${BASE_URL}${image}`
                     ? "thumbnail active"
                     : "thumbnail"
                 }
-                onClick={() => setMainImage(`http://localhost:8000/${v.image}`)}
+                onClick={() => setMainImage(`${BASE_URL}${image}`)}
               />
             ))}
           </div>
@@ -383,7 +377,7 @@ const ProductDetail = () => {
                   <img
                     src={
                       p.variants?.[0]?.image
-                        ? `http://localhost:8000/${p.variants[0].image}`
+                        ? `${BASE_URL}${p.variants[0].image}`
                         : "/no-image.jpg"
                     }
                     alt={p.name}

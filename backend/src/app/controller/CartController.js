@@ -20,7 +20,7 @@ class CartController {
     });
 
     if (!cart)
-      return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+      return res.status(200).json({});
 
     res.status(200).json(cart);
   } catch (error) {

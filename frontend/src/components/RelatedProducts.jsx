@@ -3,6 +3,8 @@ import { ProductAPI } from "../services/api";
 import { Eye, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProductSection.css";
+import { showToast } from "../../libs/utils";
+import { BASE_URL } from "../constants";
 
 const RelatedProducts = ({ categorySlug, currentProductId }) => {
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -55,25 +57,7 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
     showToast("Đã thêm vào giỏ hàng!");
   };
 
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  };
+  
 
   return (
     <section className="product-section">
@@ -95,7 +79,7 @@ const RelatedProducts = ({ categorySlug, currentProductId }) => {
                 <img
                   src={
                     p.variants?.[0]?.image
-                      ? `http://localhost:8000/${p.variants[0].image}`
+                      ? `${BASE_URL}${p.variants[0].image}`
                       : "/no-image.jpg"
                   }
                   alt={p.name}

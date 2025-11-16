@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../../styles/CreateCategory.css";
 import { useSelector } from "react-redux";
 import { CategoryAPI } from "../../services/api";
+import { showErrorToast, showToast } from "../../../libs/utils";
 
 const CreateCategory = () => {
   const currentUser = useSelector((state) => state.auth.currentUser); 
@@ -36,13 +37,13 @@ const CreateCategory = () => {
       };
 
       const res = await CategoryAPI.create(payload);
-      alert("✅ Tạo danh mục thành công!");
+      showToast("Tạo danh mục thành công!");
       console.log("Response:", res);
 
       setCategory({ name: "", description: "" });
     } catch (error) {
       console.error("❌ Lỗi tạo danh mục:", error);
-      alert("❌ Không thể tạo danh mục!");
+      showErrorToast("Lỗi tạo danh mục!")
     } finally {
       setLoading(false);
     }

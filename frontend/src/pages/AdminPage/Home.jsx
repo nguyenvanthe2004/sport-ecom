@@ -11,7 +11,6 @@ const AdminLayout = () => {
       <div className="main-content">
         <HeaderAdmin />
         <div className="page-content">
-          {/* Các route con (products, categories...) sẽ hiện ở đây */}
           <Outlet />
         </div>
       </div>

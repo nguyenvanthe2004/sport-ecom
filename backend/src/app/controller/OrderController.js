@@ -7,15 +7,27 @@ const path = require("path");
 class OrderController {
   async getAllOrders(req, res) {
     try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const totalOrders = await Order.countDocuments();
+
       const orders = await Order.find()
         .populate("userId", "fullname email")
         .populate({
           path: "orderItems",
           populate: { path: "variantId", select: "name price image" },
         })
-        .populate("paymentId", "paymentMethod");
+        .populate("paymentId", "paymentMethod")
+        .sort({ createAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
 
-      res.status(200).json(orders);
+      const totalPages = Math.ceil(totalOrders / limit);
+
+      res.status(200).json({ page, limit, totalPages, totalOrders, orders });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

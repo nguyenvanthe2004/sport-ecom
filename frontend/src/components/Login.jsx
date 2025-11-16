@@ -5,6 +5,8 @@ import { login } from '../services/api';
 import '../styles/Login.css';
 import {  useDispatch } from 'react-redux';
 import { setCurrentUser } from '../redux/slices/currentUser';
+import { showErrorToast, showToast } from '../../libs/utils';
+import { FRONTEND_URL } from '../constants';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,24 +23,25 @@ const Login = () => {
 
         try {
             const response = await login(email, password);
-            console.log("==========response", response)
+            showToast("Đăng nhâp thành công!")
             dispatch(setCurrentUser(response.user))
             if(response.user.role === 'admin'){
-                navigate('/admin');
+                navigate('/admin/dashboard');
             } else if (response.user.role === 'user'){
-                navigate('/home');
+                navigate('/');
             } else {
                 setError('Unknown user role');
             }
 
         } catch (error) {
+            showErrorToast("Lỗi đăng nhập!")
             setError(error.message);
         }
     }
     return (
         <div className="login-container">
             <div className="logo-img">
-                <img src="/public/logo.jpg" alt="" />
+                <img src={`${FRONTEND_URL}logo.jpg`} alt="" />
             </div>
             <form className="login-form" onSubmit={handleSubmit}>
                 <div className="form-group">
@@ -62,7 +65,9 @@ const Login = () => {
                         minLength={5}
                     />
                 </div>
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className="error-message">
+                <p>Tài Khoản và Mật khẩu không hợp lệ!</p>    
+                </div>}
                 <button type="submit" className="login-btn" disabled={!email || !password}>
                     Đăng nhập
                 </button>

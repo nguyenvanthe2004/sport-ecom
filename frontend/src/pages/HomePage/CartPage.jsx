@@ -7,6 +7,8 @@ import { fetchCart, removeFromCart, updateCartQuantity,clearCart } from "../../r
 import LoadingPage from "../../components/LoadingPage";
 import { useNavigate } from "react-router-dom";
 import { setCheckoutItems } from "../../redux/slices/cartSlice";
+import { showToast } from "../../../libs/utils";
+import { BASE_URL } from "../../constants";
 
 
 const CartPage = () => {
@@ -17,14 +19,20 @@ const CartPage = () => {
   const currentUser = useSelector((state) => state.auth.currentUser);
 
   const isLoggedIn = currentUser.role === "user";
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const loadCart = async () => {
-      await dispatch(fetchCart());
+      dispatch(fetchCart());
       setLoading(false);
     };
     loadCart();
   }, [dispatch]);
+
+  const totalPages = Math.ceil(cart.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedItems = cart.slice(startIndex, startIndex + itemsPerPage);
 
   const updateQuantity = async (variantId, amount) => {
     const item = cart.find((i) => i._id === variantId);
@@ -32,7 +40,7 @@ const CartPage = () => {
     const newQuantity = Math.max(item.quantity + amount, 1);
 
     try {
-      await dispatch(updateCartQuantity(variantId, newQuantity));
+      dispatch(updateCartQuantity(variantId, newQuantity));
       showToast("Đã cập nhật giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi khi cập nhật số lượng:", error);
@@ -41,7 +49,7 @@ const CartPage = () => {
 
 const removeItem = async (id) => {
     try {
-      await dispatch(removeFromCart(id));
+      dispatch(removeFromCart(id));
       showToast("Đã xóa sản phẩm khỏi giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi khi xóa sản phẩm:", error);
@@ -49,7 +57,7 @@ const removeItem = async (id) => {
   };
   const handleClearCart = async () => {
     try {
-      await dispatch(clearCart());
+      dispatch(clearCart());
       showToast("Đã làm trống giỏ hàng!");
     } catch (error) {
       console.error("❌ Lỗi khi xóa toàn bộ giỏ hàng:", error);
@@ -61,7 +69,7 @@ const removeItem = async (id) => {
     0
   );
 
-  const handleClick = () => (navigate("/home"));
+  const handleClick = () => (navigate("/"));
   const handleCheckout = () => {
     if (isLoggedIn) {
       dispatch(setCheckoutItems(cart));
@@ -69,26 +77,6 @@ const removeItem = async (id) => {
     } else {
       navigate("/login");
     }
-  };
-
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <div class="toast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="toast-message">${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
   };
 
   if (loading)
@@ -115,11 +103,11 @@ const removeItem = async (id) => {
           ) : (
             <div className="cart-content">
               <div className="cart-items">
-                {cart.map((item) => (
+                {paginatedItems.map((item) => (
                   <div className="cart-item" key={item._id}>
                     <div className="item-img">
                       <img
-                        src={`http://localhost:8000${item.variantId?.image}`}
+                        src={`${BASE_URL}${item.variantId?.image}`}
                         alt={item.variantId?.productId?.name}
                       />
                     </div>
@@ -163,6 +151,33 @@ const removeItem = async (id) => {
                     </div>
                   </div>
                 ))}
+                {totalPages > 1 && (
+                  <div className="pagination">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((p) => p - 1)}
+                    >
+                      «
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(i + 1)}
+                        className={currentPage === i + 1 ? "active" : ""}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((p) => p + 1)}
+                    >
+                      »
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="cart-summary">

@@ -1,16 +1,16 @@
 import axios from "axios";
+import { BASE_URL } from "../constants";
 
-const API_URL_USER = "http://localhost:8000/user";
-const API_URL_UPLOAD = "http://localhost:8000/upload";
-const API_URL_PRODUCT = "http://localhost:8000/product";
-const API_URL_BRAND = "http://localhost:8000/brand";
-const API_URL_CATEGORY = "http://localhost:8000/category";
-const API_URL_CART = "http://localhost:8000/cart";
-const API_URL_ORDER = "http://localhost:8000/order";
-
+const API_URL_USER = `${BASE_URL}/user`;
+const API_URL_UPLOAD = `${BASE_URL}/upload`;
+const API_URL_PRODUCT = `${BASE_URL}/product`;
+const API_URL_BRAND = `${BASE_URL}/brand`;
+const API_URL_CATEGORY = `${BASE_URL}/category`;
+const API_URL_CART = `${BASE_URL}/cart`;
+const API_URL_ORDER = `${BASE_URL}/order`;
+const API_URL_DASHBOARD = `${BASE_URL}/dashboard`;
 
 export const login = async (email, password) => {
-  console.log("Logging in with:", email, password);
   const response = await axios.post(
     `${API_URL_USER}/login`,
     { email, password },
@@ -27,9 +27,37 @@ export const register = async (email, password, fullname) => {
   });
   return response.data;
 };
-
+export const editUser = async (email, fullname) => {
+  const response = await axios.put(
+    `${API_URL_USER}/edit`,
+    { email, fullname },
+    { withCredentials: true }
+  );
+  return response.data;
+};
+export const changePassword = async (currentPassword, newPassword) => {
+  const response = await axios.put(
+    `${API_URL_USER}/changePassword`,
+    { oldPassword: currentPassword, newPassword },
+    { withCredentials: true }
+  );
+  return response.data;
+};
+export const getAllUsers = async (page = 1, limit = 10) => {
+  const response = await axios.get(`${API_URL_USER}/getAll`, {
+    params: { page, limit },
+    withCredentials: true,
+  });
+  return response.data;
+};
 export const getCurrentUser = async () => {
   const response = await axios.get(`${API_URL_USER}/current`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+export const removeUser = async () => {
+  const response = await axios.delete(`${API_URL_USER}/remove`, {
     withCredentials: true,
   });
   return response.data;
@@ -62,11 +90,36 @@ export const UploadAPI = {
 };
 
 export const ProductAPI = {
-  getAll: async () => {
-    const res = await axios.get(`${API_URL_PRODUCT}/getAll`);
+  getAll: async (page = 1, limit = 10) => {
+    try {
+      const res = await axios.get(`${API_URL_PRODUCT}/getAll`, {
+        params: { page, limit },
+      });
+      return res.data;
+    } catch (error) {
+      console.error("❌ Lỗi khi lấy danh sách sản phẩm:", error);
+      throw error;
+    }
+  },
+  getProductById: async (id) => {
+    const res = await axios.get(`${API_URL_PRODUCT}/product/${id}`);
     return res.data;
   },
-
+  getFiltered: async (params) => { 
+    const res = await axios.get(`${API_URL_PRODUCT}/filter`, { params });
+    return res.data;
+  },
+  search: async (keyword) => {
+    try {
+      const res = await axios.get(`${API_URL_PRODUCT}/search`, {
+        params: { q: keyword },
+      });
+      return res.data;
+    } catch (error) {
+      console.error("❌ Lỗi khi tìm kiếm sản phẩm:", error);
+      throw error;
+    }
+  },
   create: async (productData) => {
     const res = await axios.post(`${API_URL_PRODUCT}/create`, productData, {
       withCredentials: true,
@@ -98,11 +151,40 @@ export const BrandAPI = {
     const res = await axios.get(`${API_URL_BRAND}/getAll`);
     return res.data;
   },
+  getBrandById: async (id) => {
+    const res = await axios.get(`${API_URL_BRAND}/brand/${id}`);
+    return res.data;
+  },
+  create: async (brandData) => {
+    const res = await axios.post(`${API_URL_BRAND}/create`, brandData, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  update: async (brandId, brandData) => {
+    const res = await axios.put(
+      `${API_URL_BRAND}/update/${brandId}`,
+      brandData
+    );
+    return res.data;
+  },
+
+  delete: async (brandId) => {
+    const res = await axios.delete(`${API_URL_BRAND}/delete/${brandId}`);
+    return res.data;
+  },
+
 };
 
 export const CategoryAPI = {
   getAll: async () => {
     const res = await axios.get(`${API_URL_CATEGORY}/getAll`);
+    return res.data;
+  },
+
+  getCategoryById: async (id) => {
+    const res = await axios.get(`${API_URL_CATEGORY}/category/${id}`);
     return res.data;
   },
 
@@ -168,15 +250,13 @@ export const CartAPI = {
   },
 };
 export const OrderAPI = {
-  // Lấy tất cả đơn hàng của user hiện tại
-  getMyOrders: async () => {
+  getMyOrders: async (page = 1, limit = 5) => {
     const res = await axios.get(`${API_URL_ORDER}/myOrders`, {
+      params: { page, limit },
       withCredentials: true,
     });
     return res.data;
   },
-
-  // Lấy tất cả đơn hàng (cho admin)
   getAll: async () => {
     const res = await axios.get(`${API_URL_ORDER}/getAll`, {
       withCredentials: true,
@@ -184,7 +264,6 @@ export const OrderAPI = {
     return res.data;
   },
 
-  // Lấy chi tiết đơn hàng theo ID
   getById: async (orderId) => {
     const res = await axios.get(`${API_URL_ORDER}/${orderId}`, {
       withCredentials: true,
@@ -197,20 +276,48 @@ export const OrderAPI = {
     });
     return res.data;
   },
-
-  // Cập nhật trạng thái đơn hàng
   updateStatus: async (orderId, data) => {
     const res = await axios.put(`${API_URL_ORDER}/update/${orderId}`, data, {
       withCredentials: true,
     });
     return res.data;
   },
-
-  // Xóa đơn hàng
   delete: async (orderId) => {
     const res = await axios.delete(`${API_URL_ORDER}/delete/${orderId}`, {
       withCredentials: true,
     });
     return res.data;
   },
+};
+
+export const DashboardAPI = {
+  getStats: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/stats`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  // 💰 Lấy dữ liệu doanh thu theo tháng (biểu đồ)
+  getRevenueChart: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/chart`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  // 🕓 Lấy hoạt động gần đây (recent activities)
+  getRecentActivities: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/activities`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  fetchTodayRevenue: async () => {
+    const res = await axios.get(`${API_URL_DASHBOARD}/today-revenue`, {
+      withCredentials: true,
+    });
+    return res.data;
+  }
 };
