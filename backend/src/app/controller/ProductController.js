@@ -19,7 +19,7 @@ class ProductController {
           path: "variants",
           select: "nameDetail price stock image",
         })
-        .sort({ createAt: -1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean();

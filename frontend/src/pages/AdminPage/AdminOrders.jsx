@@ -78,6 +78,7 @@ const AdminOrders = () => {
   };
 
   // ✅ Lọc đơn hàng theo tìm kiếm + trạng thái
+  
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
       order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,7 +110,7 @@ const AdminOrders = () => {
       setEditMode(false);
       setSelectedOrder(null);
       const data = await OrderAPI.getAll();
-      setOrders(data);
+      setOrders(data.orders || []);
     } catch (error) {
       console.error("❌ Lỗi cập nhật trạng thái:", error);
       showErrorToast("Cập nhật thất bại!");

@@ -15,7 +15,7 @@ class UserController {
       const totalUsers = await Users.countDocuments();
 
       const users = await Users.find()
-        .sort({ createAt: -1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean();

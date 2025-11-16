@@ -20,7 +20,7 @@ class OrderController {
           populate: { path: "variantId", select: "name price image" },
         })
         .populate("paymentId", "paymentMethod")
-        .sort({ createAt: -1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean();

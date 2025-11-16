@@ -81,10 +81,10 @@ const Footer = () => {
               <li>
                 <a href="/products">Sản phẩm</a>
               </li>
-              <li>Danh mục</li>
-              <li>Tin tức</li>
-              <li>Giới thiệu</li>
-              <li>Liên hệ</li>
+              <li><a href="/" >Danh mục</a></li>
+              <li><a href="/" >Tin tức</a></li>
+              <li><a href="/" >Giới thiệu</a></li>
+              <li><a href="/" >Liên hệ</a></li>
             </ul>
           </div>
 

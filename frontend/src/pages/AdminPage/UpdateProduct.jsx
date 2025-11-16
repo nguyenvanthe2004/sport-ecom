@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { UploadAPI, ProductAPI, BrandAPI, CategoryAPI } from "../../services/api";
+import {
+  UploadAPI,
+  ProductAPI,
+  BrandAPI,
+  CategoryAPI,
+} from "../../services/api";
 import "../../styles/CreateProduct.css"; // style dùng chung
 import { showErrorToast, showToast } from "../../../libs/utils";
 import { BASE_URL } from "../../constants";
@@ -38,7 +43,7 @@ const UpdateProduct = () => {
         // Lấy product
         const p = await ProductAPI.getProductById(id);
         console.log(p);
-        
+
         setProduct({
           name: p.name,
           description: p.description,
@@ -51,8 +56,9 @@ const UpdateProduct = () => {
         setVariants(
           p.variants.map((v) => ({
             ...v,
-            image: `${v.image}`
-             // để upload nếu user chọn
+            image: v.image,
+            imageFile: null
+            // để upload nếu user chọn
           }))
         );
       } catch (err) {
@@ -117,7 +123,6 @@ const UpdateProduct = () => {
         variants: uploadedVariants,
       };
       console.log(payload);
-      
 
       await ProductAPI.update(id, payload);
 
@@ -125,7 +130,7 @@ const UpdateProduct = () => {
       navigate("/admin/products");
     } catch (err) {
       console.error("❌ Lỗi cập nhật:", err);
-      showErrorToast("Lỗi cập nhật sản phẩm!")
+      showErrorToast("Lỗi cập nhật sản phẩm!");
     } finally {
       setLoading(false);
     }
@@ -167,7 +172,9 @@ const UpdateProduct = () => {
         {/* --- Dropdown chọn Brand & Category --- */}
         <div className="row mb-3">
           <div className="col-md-6">
-            <label className="form-label fw-semibold">Thương hiệu (Brand)</label>
+            <label className="form-label fw-semibold">
+              Thương hiệu (Brand)
+            </label>
             <select
               name="brandId"
               className="form-select"
@@ -185,7 +192,9 @@ const UpdateProduct = () => {
           </div>
 
           <div className="col-md-6">
-            <label className="form-label fw-semibold">Danh mục (Category)</label>
+            <label className="form-label fw-semibold">
+              Danh mục (Category)
+            </label>
             <select
               name="categoryId"
               className="form-select"
@@ -206,9 +215,14 @@ const UpdateProduct = () => {
         <hr />
 
         {/* --- Biến thể --- */}
-        <h5 className="fw-semibold mb-3 text-secondary">Danh sách biến thể (Variants)</h5>
+        <h5 className="fw-semibold mb-3 text-secondary">
+          Danh sách biến thể (Variants)
+        </h5>
         {variants.map((v, index) => (
-          <div key={index} className="variant-box border rounded p-3 mb-3 bg-light">
+          <div
+            key={index}
+            className="variant-box border rounded p-3 mb-3 bg-light"
+          >
             <div className="row">
               <div className="col-md-3">
                 <label className="form-label">Tên chi tiết</label>
@@ -253,7 +267,11 @@ const UpdateProduct = () => {
                 />
                 {v.image && (
                   <img
-                    src={`${BASE_URL}${v.image}`}
+                    src={
+                      v.image.startsWith("blob:")
+                        ? v.image
+                        : `${BASE_URL}${v.image}`
+                    }
                     alt="preview"
                     className="mt-2 rounded preview-img"
                     width="80"

@@ -109,7 +109,7 @@ const OrderPage = () => {
                       </p>
                       <p>
                         Ngày đặt:{" "}
-                        {new Date(order.createAt).toLocaleString("vi-VN")}
+                        {new Date(order.createdAt).toLocaleString("vi-VN")}
                       </p>
                     </div>
                   </div>

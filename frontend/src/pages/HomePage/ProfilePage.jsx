@@ -259,20 +259,18 @@ export default function ProfilePage() {
                 <tr key={index}>
                   <td>{order._id}</td>
                   <td>
-                    {new Date(order.createAt).toLocaleDateString("vi-VN")}
+                    {new Date(order.createdAt).toLocaleDateString("vi-VN")}
                   </td>
                   <td>{order.orderItems?.length || 0} sản phẩm</td>
                   <td>{order.totalPrice?.toLocaleString("vi-VN")}₫</td>
                   <td>
                     <span
-                      className={`status-badge ${order.status === "delivered"}`}
+                      className="status-badge status-delivered"
                     >
                       {order.status}
                     </span>
                   </td>
-                  <td>
-                    <button className="btn-view">Xem</button>
-                  </td>
+                  
                 </tr>
               ))}
             </tbody>
@@ -307,11 +305,6 @@ export default function ProfilePage() {
                   <div className="address-meta">
                     {currentUser?.name || "Người dùng"} •{" "}
                     {currentUser?.fullName}
-                  </div>
-
-                  <div className="address-actions">
-                    <button className="btn-sm">Chỉnh sửa</button>
-                    <button className="btn-sm">Xóa</button>
                   </div>
                 </div>
               ))}
