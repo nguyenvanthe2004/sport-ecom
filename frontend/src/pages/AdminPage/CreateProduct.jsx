@@ -106,8 +106,7 @@ const CreateProduct = () => {
         variants: uploadedVariants,
       };
 
-      const token = currentUser?.token || "";
-      const res = await ProductAPI.create(payload, token);
+      const res = await ProductAPI.create(payload);
 
       showToast("Tạo sản phẩm thành công!");
       console.log("📦 Product created:", res);

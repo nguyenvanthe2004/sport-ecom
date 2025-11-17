@@ -3,6 +3,7 @@ import "../../styles/CreateCategory.css";
 import { useSelector } from "react-redux";
 import { CategoryAPI } from "../../services/api";
 import { showErrorToast, showToast } from "../../../libs/utils";
+import { Link } from "react-router-dom";
 
 const CreateCategory = () => {
   const currentUser = useSelector((state) => state.auth.currentUser); 
@@ -52,9 +53,9 @@ const CreateCategory = () => {
   return (
     <div className="create-category container mt-5">
       <h2 className="fw-bold mb-3">Tạo danh mục mới</h2>
-      <a href="/admin/categories" className="text-decoration-none text-primary">
+      <Link href="/admin/categories" className="text-decoration-none text-primary">
         ← Quay lại danh sách
-      </a>
+      </Link>
 
       <form
         onSubmit={handleSubmit}

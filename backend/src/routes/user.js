@@ -5,6 +5,7 @@ const { verifyUser, verifyAdmin } = require("../config/middleware/authJWT");
 
 router.get("/getAll", verifyUser, verifyAdmin, UserController.getAllUsers);
 router.post("/login", UserController.login);
+router.post("/logout", UserController.logout);
 router.post("/register", UserController.register);
 router.get("/current",verifyUser, UserController.current);
 router.put("/edit", verifyUser, UserController.editUser);

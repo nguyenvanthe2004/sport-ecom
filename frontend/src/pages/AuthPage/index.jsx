@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Login from "../../components/Login";
 import Register from "../../components/Register";
-import "../../styles/Auth.css"
+import "../../styles/Auth.css";
+import { Link, useLocation } from "react-router-dom";
 const AuthPage = () => {
+  let location = useLocation();
   const [showLogin, setShowLogin] = useState(true);
+
+  useEffect(() => {
+    setShowLogin(location.pathname === "/login");
+  }, [location.pathname]);
 
   return (
     <div className="auth-page">
@@ -20,31 +26,11 @@ const AuthPage = () => {
           <div className="auth-toggle-text">
             {showLogin ? (
               <p>
-                Bạn chưa có tài khoản?{" "}
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowLogin(false);
-                  }}
-                  className="link-a"
-                >
-                  Đăng ký!
-                </a>
+                Bạn chưa có tài khoản? <Link to="/register" className="link-a">Đăng ký!</Link>
               </p>
             ) : (
               <p>
-                Bạn đã có tài khoản?{" "}
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowLogin(true);
-                  }}
-                  className="link-a"
-                >
-                  Đăng nhập!
-                </a>
+                Bạn đã có tài khoản? <Link to="/login" className="link-a">Đăng nhập!</Link>
               </p>
             )}
           </div>

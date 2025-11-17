@@ -3,6 +3,7 @@ import "../../styles/CreateCategory.css";
 import { useSelector } from "react-redux";
 import { BrandAPI } from "../../services/api"; 
 import { showErrorToast, showToast } from "../../../libs/utils";
+import { Link } from "react-router-dom";
 
 const CreateBrand = () => {
   const currentUser = useSelector((state) => state.auth.currentUser);
@@ -53,9 +54,9 @@ const CreateBrand = () => {
   return (
     <div className="create-category container mt-5">
       <h2 className="fw-bold mb-3">Tạo thương hiệu mới</h2>
-      <a href="/admin/brands" className="text-decoration-none text-primary">
+      <Link to="/admin/brands" className="text-decoration-none text-primary">
         ← Quay lại danh sách
-      </a>
+      </Link>
 
       <form
         onSubmit={handleSubmit}

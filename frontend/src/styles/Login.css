@@ -4,7 +4,9 @@
   background: #fff;
   border-radius: 8px;          /* bo góc mềm hơn */
   padding: 20px;               /* padding lớn hơn */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); /* bóng rõ hơn */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: relative; 
+  z-index: 1;  
 }
 
 .login-container h2 {

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, removeFromCart } from "../redux/slices/cartSlice";
 import { clearCurrentUser } from "../redux/slices/currentUser";
-import { ProductAPI } from "../services/api";
+import { logout, ProductAPI } from "../services/api";
 import { BASE_URL, FRONTEND_URL } from "../constants";
 
 const Header = () => {
@@ -81,11 +81,17 @@ const Header = () => {
     setShowUserDropdown(false);
     navigate("/profile");
   };
-  const handleLogout = () => {
-    dispatch(clearCurrentUser());
-    setShowUserDropdown(false);
-    navigate("/login");
-  };
+  const handleLogout = async () => {
+  try {
+    await logout();                              
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+  dispatch(clearCurrentUser());  
+  setShowUserDropdown(false);    
+  navigate("/login"); 
+};
+
   const handleLogin = () => {
     dispatch(clearCurrentUser());
     setShowUserDropdown(false);
@@ -134,9 +140,7 @@ const Header = () => {
                 }}
               >
                 <img
-                  src={`${BASE_URL}${
-                    product.variants?.[0]?.image
-                  }`}
+                  src={`${BASE_URL}${product.variants?.[0]?.image}`}
                   alt={product.name}
                 />
                 <span>{product.name}</span>

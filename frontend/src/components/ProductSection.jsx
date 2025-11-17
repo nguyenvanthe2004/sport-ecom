@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import "../styles/ProductSection.css";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart, addToCart } from "../redux/slices/cartSlice";
-import { showToast } from "../../libs/utils";
 import { BASE_URL } from "../constants";
 
 const ProductSection = () => {
@@ -26,7 +25,7 @@ const ProductSection = () => {
       setLoading(true);
       try {
         const data = await ProductAPI.getAll();
-        setProducts(data.products || data);
+        setProducts(data.products || []);
       } catch (error) {
         console.error("❌ Lỗi khi tải sản phẩm:", error);
       } finally {

@@ -87,6 +87,23 @@ class UserController {
     }
   }
 
+    async logout(req, res) {
+    try {
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,       
+        sameSite: "none",   
+      });
+
+      return res.json({
+        message: "Logout successful",
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+
   async register(req, res) {
     try {
       const { email, password, fullname } = req.body;
