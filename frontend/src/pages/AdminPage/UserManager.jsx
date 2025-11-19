@@ -38,7 +38,7 @@ const UserManager = () => {
 
     try {
       setDeleting(true);
-      await removeUser(userId); 
+      await removeUser(userId);
       showToast("Xóa người dùng thành công!");
       fetchUsers(page); // reload trang hiện tại
     } catch (err) {
@@ -103,10 +103,7 @@ const UserManager = () => {
       {/* 🔹 Pagination */}
       {totalPages > 1 && (
         <div className="pagination mt-3 text-center">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
+          <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
             «
           </button>
           {Array.from({ length: totalPages }, (_, i) => (
