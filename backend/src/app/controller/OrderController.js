@@ -119,6 +119,16 @@ class OrderController {
         const price = variant.price * item.quantity;
         totalPrice += price;
 
+        const updated = await Variant.findOneAndUpdate(
+          { _id: item.variantId, stock: { $gte: item.quantity } },
+          { $inc: { stock: -item.quantity } },
+          { new: true }
+        );
+
+        if (!updated) {
+          return res.status(400).json({ message: "Sản phẩm không đủ hàng!" });
+        }
+        
         const orderDetail = new OrderDetail({
           orderId: order._id,
           variantId: item.variantId,

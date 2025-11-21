@@ -247,18 +247,18 @@ const AdminOrders = () => {
                         </span>
                       </td>
                       <td>
-                        <span
-                          className={`payment-badge payment-${order.paymentStatus}`}
-                        >
-                          {order.paymentStatus === "paid" ? (
-                            <Check size={14} />
-                          ) : (
-                            <X size={14} />
-                          )}
-                          {order.paymentStatus === "paid"
-                            ? "Đã thanh toán"
-                            : "Chưa thanh toán"}
-                        </span>
+                        <span className="payment-badge-content">
+                            {order.paymentStatus === "paid" ? (
+                              <Check size={14} />
+                            ) : (
+                              <X size={14} />
+                            )}
+                            <span>
+                              {order.paymentStatus === "paid"
+                                ? "Đã thanh toán"
+                                : "Chưa thanh toán"}
+                            </span>
+                          </span>
                       </td>
                       <td>
                         <div className="action-buttons">
