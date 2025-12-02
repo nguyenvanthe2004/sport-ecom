@@ -70,7 +70,7 @@ const Checkout = () => {
       return;
     }
 
-    for (const item of cartItems) {
+    for (const item of cartItems) {     
       const available = item.variantId?.stock ?? 0;
 
       if (available < item.quantity) {

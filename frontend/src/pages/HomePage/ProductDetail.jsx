@@ -126,8 +126,7 @@ const ProductDetail = () => {
     if (!currentVariant) {
       showErrorToast("Vui lòng chọn màu và kích cỡ!");
       return;
-    }
-
+    }    
     const buyNowItem = {
       _id: currentVariant._id,
       variantId: {
@@ -135,6 +134,7 @@ const ProductDetail = () => {
         nameDetail: currentVariant.nameDetail,
         price: currentVariant.price,
         image: currentVariant.image,
+        stock: currentVariant.stock,
         productId: {
           _id: product._id,
           name: product.name,
