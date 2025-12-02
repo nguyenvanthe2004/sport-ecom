@@ -118,8 +118,9 @@ class OrderController {
 
         const price = variant.price * item.quantity;
         totalPrice += price;
-
         const updated = await Variant.findOneAndUpdate(
+          
+          
           { _id: item.variantId, stock: { $gte: item.quantity } },
           { $inc: { stock: -item.quantity } },
           { new: true }
