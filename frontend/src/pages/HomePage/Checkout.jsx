@@ -70,6 +70,17 @@ const Checkout = () => {
       return;
     }
 
+    for (const item of cartItems) {
+      const available = item.variantId?.stock ?? 0;
+
+      if (available < item.quantity) {
+        showErrorToast(
+          "Sản phẩm này trong kho đã hết!"
+        );
+        return;
+      }
+    }
+
     const orderItems = cartItems.map((item) => ({
       variantId: item.variantId?._id || item.variantId,
       quantity: item.quantity,
