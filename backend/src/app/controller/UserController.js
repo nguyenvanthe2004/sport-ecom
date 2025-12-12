@@ -197,8 +197,8 @@ class UserController {
   }
   async removeUser(req, res) {
     try {
-      const userId = req.user.userId;
-      await Users.findByIdAndDelete(userId);
+      const { userid } = req.params;
+      await Users.findByIdAndDelete(userid);
       res.json({ message: "User removed successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });

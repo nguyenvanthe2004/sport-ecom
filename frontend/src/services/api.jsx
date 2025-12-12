@@ -66,8 +66,8 @@ export const getCurrentUser = async () => {
   });
   return response.data;
 };
-export const removeUser = async () => {
-  const response = await axios.delete(`${API_URL_USER}/remove`, {
+export const removeUser = async (userid) => {
+  const response = await axios.delete(`${API_URL_USER}/remove/${userid}`, {
     withCredentials: true,
   });
   return response.data;

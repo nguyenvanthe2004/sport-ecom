@@ -30,7 +30,7 @@ const UserManager = () => {
   };
 
   // 🔹 Xóa user
-  const handleDelete = async (userId) => {
+  const handleDelete = async (userid) => {
     const confirmDelete = window.confirm(
       "Bạn có chắc muốn xóa người dùng này?"
     );
@@ -38,7 +38,7 @@ const UserManager = () => {
 
     try {
       setDeleting(true);
-      await removeUser(userId);
+      await removeUser(userid);
       showToast("Xóa người dùng thành công!");
       fetchUsers(page); // reload trang hiện tại
     } catch (err) {

@@ -10,6 +10,6 @@ router.post("/register", UserController.register);
 router.get("/current",verifyUser, UserController.current);
 router.put("/edit", verifyUser, UserController.editUser);
 router.put("/changePassword", verifyUser, UserController.changePassword);
-router.delete("/remove", verifyUser, verifyAdmin, UserController.removeUser);
+router.delete("/remove/:userid", verifyUser, verifyAdmin, UserController.removeUser);
 
 module.exports = router;
