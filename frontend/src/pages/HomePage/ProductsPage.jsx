@@ -61,60 +61,61 @@ const ProductsPage = () => {
   }, []);
 
   useEffect(() => {
-  const fetchFiltered = async () => {
-    try {
-      const hasCategory = !!selectedCat;
-      const hasBrand = !!selectedBrand;
-      const hasPrice = !!priceFilter;
+    const fetchFiltered = async () => {
+      try {
+        const hasCategory = !!selectedCat;
+        const hasBrand = !!selectedBrand;
+        const hasPrice = !!priceFilter;
 
-      // Nếu không có bộ lọc nào => quay lại API phân trang mặc định
-      if (!hasCategory && !hasBrand && !hasPrice) {
-        fetchProducts(page);
-        return;
-      }
-
-      const params = {};
-
-      if (hasCategory) {
-        const selectedCategory = categories.find(c => c.name === selectedCat);
-        if (selectedCategory) params.categoryId = selectedCategory._id;
-      }
-
-      if (hasBrand) {
-        const selectedB = brands.find(b => b.name === selectedBrand);
-        if (selectedB) params.brandId = selectedB._id;
-      }
-
-      if (hasPrice) {
-        switch (priceFilter) {
-          case "under500":
-            params.maxPrice = 500000;
-            break;
-          case "500to1000":
-            params.minPrice = 500000;
-            params.maxPrice = 1000000;
-            break;
-          case "1000to2000":
-            params.minPrice = 1000000;
-            params.maxPrice = 2000000;
-            break;
-          case "over2000":
-            params.minPrice = 2000000;
-            break;
+        // Nếu không có bộ lọc nào => quay lại API phân trang mặc định
+        if (!hasCategory && !hasBrand && !hasPrice) {
+          fetchProducts(page);
+          return;
         }
+
+        const params = {};
+
+        if (hasCategory) {
+          const selectedCategory = categories.find(
+            (c) => c.name === selectedCat
+          );
+          if (selectedCategory) params.categoryId = selectedCategory._id;
+        }
+
+        if (hasBrand) {
+          const selectedB = brands.find((b) => b.name === selectedBrand);
+          if (selectedB) params.brandId = selectedB._id;
+        }
+
+        if (hasPrice) {
+          switch (priceFilter) {
+            case "under500":
+              params.maxPrice = 500000;
+              break;
+            case "500to1000":
+              params.minPrice = 500000;
+              params.maxPrice = 1000000;
+              break;
+            case "1000to2000":
+              params.minPrice = 1000000;
+              params.maxPrice = 2000000;
+              break;
+            case "over2000":
+              params.minPrice = 2000000;
+              break;
+          }
+        }
+
+        const res = await ProductAPI.getFiltered(params);
+        setProducts(res.products || []);
+        setTotalPages(1);
+      } catch (error) {
+        console.error("❌ Lỗi khi lọc sản phẩm:", error);
       }
+    };
 
-      const res = await ProductAPI.getFiltered(params);
-      setProducts(res.products || []);
-      setTotalPages(1);
-    } catch (error) {
-      console.error("❌ Lỗi khi lọc sản phẩm:", error);
-    }
-  };
-
-  fetchFiltered();
-}, [selectedCat, selectedBrand, priceFilter, categories, brands, page]);
-
+    fetchFiltered();
+  }, [selectedCat, selectedBrand, priceFilter, categories, brands, page]);
 
   return (
     <>

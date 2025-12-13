@@ -39,7 +39,7 @@ const CategoryManager = () => {
       showToast("Đã xóa danh mục!");
       setCategories(categories.filter((c) => c._id !== id));
     } catch (err) {
-      showErrorToast("Lỗi xóa danh mục!")
+      showErrorToast("Lỗi xóa danh mục!");
     }
   };
 

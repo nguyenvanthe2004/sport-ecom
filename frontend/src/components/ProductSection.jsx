@@ -65,9 +65,7 @@ const ProductSection = () => {
                   className="product-image"
                 />
 
-                <div className="product-overlay">
-                  
-                </div>
+                <div className="product-overlay"></div>
 
                 {p.variants?.[0]?.discount && (
                   <div className="discount-badge">

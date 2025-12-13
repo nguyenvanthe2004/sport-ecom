@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BrandAPI } from "../../services/api"; // API Brand
-import "../../styles/CategoryManager.css"; 
+import "../../styles/CategoryManager.css";
 import { showErrorToast, showToast } from "../../../libs/utils";
 import LoadingPage from "../../components/LoadingPage";
 import { BadgePercent } from "lucide-react";
@@ -39,7 +39,7 @@ const BrandManager = () => {
       showToast("Đã xóa thương hiệu!");
       setBrands(brands.filter((b) => b._id !== id));
     } catch (err) {
-      showErrorToast("Lỗi xóa thương hiệu!")
+      showErrorToast("Lỗi xóa thương hiệu!");
     }
   };
 
@@ -52,7 +52,9 @@ const BrandManager = () => {
           <h2 className="fw-bold">
             <BadgePercent size={30} /> Quản lý thương hiệu
           </h2>
-          <p className="page-subtitle">Theo dõi và quản lý tất cả thương hiệu</p>
+          <p className="page-subtitle">
+            Theo dõi và quản lý tất cả thương hiệu
+          </p>
         </div>
 
         <Link to="/admin/brands/create" className="btn btn-primary">
