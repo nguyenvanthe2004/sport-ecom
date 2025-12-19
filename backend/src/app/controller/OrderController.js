@@ -58,7 +58,8 @@ class OrderController {
 
   async getOrderById(req, res) {
     try {
-      const order = await Order.findById(req.params.id)
+     const { orderId } = req.params;
+      const order = await Order.findById(orderId)
         .populate("userId", "fullname email")
         .populate({
           path: "orderItems",
