@@ -149,7 +149,7 @@ class CartController {
   async removeCartItem(req, res) {
     try {
       const { cartItemId } = req.params;
-      const cart = await Cart.findById(cartItemId);
+      const cart = await Cart.findOne({ cartItems: cartItemId });
       if (!cart)
         return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
 
